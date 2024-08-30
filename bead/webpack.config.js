@@ -2,7 +2,9 @@ const path = require('path');
 const webpack = require('webpack');
 
 module.exports = (env, argv) => {
-    const isProduction = argv.mode === 'production';
+    // const mode = 'development';
+    const mode = argv.mode;
+    const isProduction = mode === 'production';
 
     return {
         entry: './src/extension.ts',
@@ -14,11 +16,12 @@ module.exports = (env, argv) => {
             devtoolModuleFilenameTemplate: '../[resource-path]'
         },
         devtool: isProduction ? false : 'source-map',
+        mode,
         externals: {
             vscode: 'commonjs vscode'
         },
         resolve: {
-            extensions: ['.ts', '.js']
+            extensions: ['.ts', '.js'] 
         },
         module: {
             rules: [

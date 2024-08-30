@@ -10,7 +10,10 @@ import { ConfigManager } from './config';
 const networkManager = new NetworkManager();
 
 networkManager.on('connected', () => {
-    console.log('Connected to server');
+    beadMsgManager.sendPing();
+
+    // 检查当前是否有打开的文件夹
+    checkCurrentWorkspace();
 });
 // networkManager.on('message', (data) => {
 //     // 处理接收到的消息
@@ -70,12 +73,6 @@ export function activate(context: vscode.ExtensionContext) {
     });
     
     networkManager.connect();
-    if (networkManager.isConnectedToServer()) {
-        console.log('Connected to server');
-        beadMsgManager.sendPing();
-    } else {
-        console.log('Not connected to server');
-    }
 
     const onDidChangeTextDocumentDisposable = vscode.workspace.onDidChangeTextDocument(event => {
         const document = event.document;
@@ -112,9 +109,6 @@ export function activate(context: vscode.ExtensionContext) {
         });
     });
 
-    // 检查当前是否有打开的文件夹
-    checkCurrentWorkspace();
-
     // 监听工作区文件夹变化事件
     const workspaceFoldersChangeDisposable = vscode.workspace.onDidChangeWorkspaceFolders(event => {
         for (let folder of event.added) {
@@ -133,7 +127,7 @@ export function activate(context: vscode.ExtensionContext) {
     const textDocumentOpenedDisposable = vscode.workspace.onDidOpenTextDocument(document => {
         console.log(`打开的文件路径: ${document.uri.fsPath}`);
 
-        beadMsgManager.sendOpenFile(document.uri.fsPath)
+        beadMsgManager.sendOpenFile(document.uri.fsPath);
     });
 
     const provider = vscode.languages.registerInlineCompletionItemProvider(
@@ -148,7 +142,7 @@ export function activate(context: vscode.ExtensionContext) {
                 const line = position.line;
                 const column = position.character;
 
-                if (!configManager.getConfig().autoTrigger && context.triggerKind == vscode.InlineCompletionTriggerKind.Automatic) {
+                if (!configManager.getConfig().autoTrigger && context.triggerKind === vscode.InlineCompletionTriggerKind.Automatic) {
                     return [];
                 }
 
@@ -207,3 +201,5 @@ function checkCurrentWorkspace() {
         }
     } 
 }
+
+console.log('aaaaaaaaaaaaaa');

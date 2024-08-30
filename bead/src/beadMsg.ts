@@ -50,7 +50,9 @@ export class BeadMessageManager extends EventEmitter {
 
     private async sendMessage(type: beadMessage.bead.msg.MessageType, message: Uint8Array): Promise<number> {
         if (!this.networkManager) {
-            throw new Error('NetworkManager not set');
+            // throw new Error('NetworkManager not set');
+            console.log('NetworkManager not set');
+            return Promise.reject('NetworkManager not set');
         }
 
         const id = this.getNextId();
