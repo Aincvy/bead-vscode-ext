@@ -10,15 +10,12 @@ import { ConfigManager } from './config';
 const networkManager = new NetworkManager();
 
 networkManager.on('connected', () => {
+    vscode.window.showInformationMessage('bead: connected server');
     beadMsgManager.sendPing();
 
     // 检查当前是否有打开的文件夹
     checkCurrentWorkspace();
 });
-// networkManager.on('message', (data) => {
-//     // 处理接收到的消息
-//     console.log('Received message:', data);
-// });
 
 const beadMsgManager = new BeadMessageManager();
 beadMsgManager.setNetworkManager(networkManager);
@@ -41,7 +38,7 @@ function createCompletionItems(res: beadMessage.bead.msg.IResTextCompletion): vs
 }
 
 beadMsgManager.on('onTextCompletion', (id: number, res: beadMessage.bead.msg.IResTextCompletion) => {
-    console.log('Received text completion:', id, res);
+    console.log('Received text completion:', id, res.content);
 
     // 将消息存储到全局 Map 中
     // globalMessageMap.set(id, res);
@@ -57,6 +54,9 @@ beadMsgManager.on('onTextCompletion', (id: number, res: beadMessage.bead.msg.IRe
         globalMessageMap.set(id, res);
     }
 });
+beadMsgManager.on('onPingPong', (id: number) => {
+    console.log('Received ping pong:', id);
+});
 
 export function activate(context: vscode.ExtensionContext) {
 
@@ -66,28 +66,17 @@ export function activate(context: vscode.ExtensionContext) {
 	// The command has been defined in the package.json file
 	// Now provide the implementation of the command with registerCommand
 	// The commandId parameter must match the command field in package.json
-	const disposable = vscode.commands.registerCommand('bead.helloWorld', () => {
+	const disposable = vscode.commands.registerCommand('bead.connect', () => {
 		// The code you place here will be executed every time your command is executed
 		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World from bead!');
+        vscode.window.showInformationMessage('bead: try connect to server');
+        networkManager.connect();
     });
     
     networkManager.connect();
 
     const onDidChangeTextDocumentDisposable = vscode.workspace.onDidChangeTextDocument(event => {
         const document = event.document;
-
-        event.contentChanges.forEach(change => {
-            const startLine = change.range.start.line;
-            const endLine = change.range.end.line;
-            const startCharacter = change.range.start.character;
-            const endCharacter = change.range.end.character;
-
-            console.log(`File changed: ${document.fileName}`);
-            console.log(`Changed range: Line ${startLine}:${startCharacter} to Line ${endLine}:${endCharacter}`);
-            console.log(`New text: ${change.text}`);
-
-        });
 
         // 在这里添加发送消息的代码
         event.contentChanges.forEach(change => {
@@ -202,4 +191,3 @@ function checkCurrentWorkspace() {
     } 
 }
 
-console.log('aaaaaaaaaaaaaa');

@@ -4,7 +4,9 @@ import { NetworkManager } from './network';
 
 export class BeadMessageManager extends EventEmitter {
     private networkManager: NetworkManager | null = null;
-    private nextId: number = 10000;
+    // private nextId: number = 10000;
+    private static sharedBuffer = new SharedArrayBuffer(4);
+    private static counter = new Int32Array(BeadMessageManager.sharedBuffer);
 
     constructor() {
         super();
@@ -40,12 +42,15 @@ export class BeadMessageManager extends EventEmitter {
             case beadMessage.bead.msg.MessageType.OpenFile:
                 this.emit('onOpenFile', message.id, beadMessage.bead.msg.ResOpenFile.decode(message.msg!));
                 break;
+            case beadMessage.bead.msg.MessageType.PingPong:
+                this.emit('onPingPong', message.id);
+                break;
             // Add more cases as needed
         }
     }
 
     private getNextId(): number {
-        return Atomics.add(new Int32Array(new SharedArrayBuffer(4)), 0, 1) + 10000;
+        return Atomics.add(BeadMessageManager.counter, 0, 1) + 10000;
     }
 
     private async sendMessage(type: beadMessage.bead.msg.MessageType, message: Uint8Array): Promise<number> {
@@ -54,7 +59,7 @@ export class BeadMessageManager extends EventEmitter {
             console.log('NetworkManager not set');
             return Promise.reject('NetworkManager not set');
         }
-
+        
         const id = this.getNextId();
         const singleMessage = beadMessage.bead.msg.BeadSingleMessage.create({
             type: type,
@@ -62,6 +67,7 @@ export class BeadMessageManager extends EventEmitter {
             msg: message
         });
 
+        // console.log('Sending message: ', singleMessage);
         const encodedMessage = beadMessage.bead.msg.BeadSingleMessage.encode(singleMessage).finish();
         await this.networkManager.send(encodedMessage);
         return id;

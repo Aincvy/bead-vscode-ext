@@ -18,8 +18,8 @@
   "contributes": {
     "commands": [
       {
-        "command": "bead.helloWorld",
-        "title": "Hello World"
+        "command": "bead.connect",
+        "title": "Bead: connect to server"
       }
     ],
     "configuration": {

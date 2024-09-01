@@ -1,12 +1,11 @@
 import * as net from 'net';
-import * as protobuf from 'protobufjs';
 import { EventEmitter } from 'events';
 import { ConfigManager } from './config';
 
 export class NetworkManager extends EventEmitter {
     private socket: net.Socket | null = null;
     private readBuffer: Buffer = Buffer.alloc(0);
-    private writeBuffer: Buffer = Buffer.alloc(0);
+    // private writeBuffer: Buffer = Buffer.alloc(0);
     private isConnected: boolean = false;
 
     constructor() {
@@ -15,6 +14,11 @@ export class NetworkManager extends EventEmitter {
     }
 
     public connect() {
+        if (this.isConnected) {
+            console.log('Already connected');
+            return;
+        }
+
         const config = ConfigManager.getInstance().getConfig();
         this.socket = new net.Socket();
 
@@ -46,9 +50,9 @@ export class NetworkManager extends EventEmitter {
         while (this.readBuffer.length >= 4) {
             const length = this.readBuffer.readUInt32BE(0);
             if (this.readBuffer.length >= length + 4) {
-                const data = this.readBuffer.slice(4, length + 4);
+                const data = this.readBuffer.subarray(4, length + 4);
                 this.emit('message', data);
-                this.readBuffer = this.readBuffer.slice(length + 4);
+                this.readBuffer = this.readBuffer.subarray(length + 4);
             } else {
                 break;
             }
@@ -63,18 +67,18 @@ export class NetworkManager extends EventEmitter {
             }
             
             
-            // const data = protobuf.Message.encode(message).finish();
             const data = message;
             const length = Buffer.alloc(4);
             length.writeUInt32BE(data.length, 0);
 
-            this.writeBuffer = Buffer.concat([this.writeBuffer, length, data]);
+            const buffer = Buffer.concat([length, data]);
+            // console.log('Send bytes:', buffer.length);
 
-            this.socket!.write(this.writeBuffer, (err) => {
+            this.socket!.write(buffer, (err) => {
                 if (err) {
+                    console.log(err);
                     reject(err);
                 } else {
-                    this.writeBuffer = Buffer.alloc(0);
                     resolve();
                 }
             });
