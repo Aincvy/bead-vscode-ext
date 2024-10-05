@@ -7,6 +7,13 @@ import * as beadMessage from './bead_message';
 import * as path from 'path';
 import { ConfigManager } from './config';
 
+const runtimeEntity = {
+    project: {
+        name: '',
+        path: ''
+    }
+};
+
 const networkManager = new NetworkManager();
 
 networkManager.on('connected', () => {
@@ -15,6 +22,10 @@ networkManager.on('connected', () => {
 
     // 检查当前是否有打开的文件夹
     checkCurrentWorkspace();
+
+    const mgr = ConfigManager.getInstance();
+    const config = mgr.getConfig();
+    beadMsgManager.sendChangeConfig(config.prompt.topic, config.prompt.functionReferenceCount);
 });
 
 const beadMsgManager = new BeadMessageManager();
@@ -57,6 +68,55 @@ beadMsgManager.on('onTextCompletion', (id: number, res: beadMessage.bead.msg.IRe
 beadMsgManager.on('onPingPong', (id: number) => {
     console.log('Received ping pong:', id);
 });
+
+ConfigManager.getInstance().on('prompt-config-changed', (mgr: ConfigManager) => {
+    const config = mgr.getConfig();
+    beadMsgManager.sendChangeConfig(config.prompt.topic, config.prompt.functionReferenceCount);
+});
+
+export function registerCommands(context: vscode.ExtensionContext) {
+    context.subscriptions.push(
+        vscode.commands.registerCommand('bead.setTopicPrompt', async () => {
+            const topicPrompt = await vscode.window.showInputBox({
+                prompt: "Enter the topic prompt",
+                placeHolder: "Topic prompt"
+            });
+            if (topicPrompt !== undefined) {
+                await ConfigManager.getInstance().updateTopicPrompt(topicPrompt);
+            }
+        }),
+        vscode.commands.registerCommand('bead.increaseFunctionReferenceCount', async () => {
+            await ConfigManager.getInstance().updateFunctionReferenceCount('increase');
+        }),
+        vscode.commands.registerCommand('bead.decreaseFunctionReferenceCount', async () => {
+            await ConfigManager.getInstance().updateFunctionReferenceCount('decrease');
+        })
+    );
+
+    let reParseFileCommand = vscode.commands.registerCommand('bead.reParseFile', () => {
+        const activeEditor = vscode.window.activeTextEditor;
+        if (activeEditor) {
+            const filePath = activeEditor.document.uri.fsPath;
+            beadMsgManager.sendReParseFile(filePath);
+        } else {
+            vscode.window.showErrorMessage('No active file to re-parse');
+        }
+    });
+
+    context.subscriptions.push(reParseFileCommand);
+
+    const clearCacheCommand = vscode.commands.registerCommand('bead.clearCache', () => {
+        beadMsgManager.sendClearCache();
+
+        if (runtimeEntity.project.path.length > 0) {
+            // 存在
+            beadMsgManager.sendInitProject(runtimeEntity.project.name, runtimeEntity.project.path);
+        }
+    });
+    context.subscriptions.push(clearCacheCommand);
+}
+
+
 
 export function activate(context: vscode.ExtensionContext) {
 
@@ -166,6 +226,11 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(workspaceFoldersChangeDisposable);
     context.subscriptions.push(textDocumentOpenedDisposable);
     context.subscriptions.push(provider);
+
+    context.subscriptions.push(vscode.workspace.onDidDeleteFiles(beadMsgManager.handleFileDelete));
+
+
+    registerCommands(context);
 }
 
 
@@ -184,6 +249,9 @@ function checkCurrentWorkspace() {
 
             const projectName = path.basename(folder.uri.fsPath);
             const projectPath = folder.uri.fsPath;
+
+            runtimeEntity.project.name = projectName;
+            runtimeEntity.project.path = projectPath;
 
             beadMsgManager.sendInitProject(projectName, projectPath);
             break;  // only can open 1 folder now 

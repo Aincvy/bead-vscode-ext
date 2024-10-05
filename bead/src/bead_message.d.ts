@@ -13,7 +13,11 @@ export namespace bead {
             TextCompletion = 2,
             FileEdit = 3,
             InitProject = 4,
-            OpenFile = 5
+            OpenFile = 5,
+            ChangeConfig = 6,
+            FileDelete = 7,
+            ClearCache = 8,
+            ReParseFile = 9
         }
 
         /** Properties of a BeadSingleMessage. */
@@ -1168,6 +1172,800 @@ export namespace bead {
         }
 
         namespace ResOpenFile {
+
+            /** ErrorTypeT enum. */
+            enum ErrorTypeT {
+                Success = 0,
+                Fail = 1
+            }
+        }
+
+        /** Properties of a ReqChangeConfig. */
+        interface IReqChangeConfig {
+
+            /** ReqChangeConfig topicPrompt */
+            topicPrompt?: (string|null);
+
+            /** ReqChangeConfig functionReferenceCount */
+            functionReferenceCount?: (number|null);
+        }
+
+        /** Represents a ReqChangeConfig. */
+        class ReqChangeConfig implements IReqChangeConfig {
+
+            /**
+             * Constructs a new ReqChangeConfig.
+             * @param [properties] Properties to set
+             */
+            constructor(properties?: bead.msg.IReqChangeConfig);
+
+            /** ReqChangeConfig topicPrompt. */
+            public topicPrompt: string;
+
+            /** ReqChangeConfig functionReferenceCount. */
+            public functionReferenceCount: number;
+
+            /**
+             * Creates a new ReqChangeConfig instance using the specified properties.
+             * @param [properties] Properties to set
+             * @returns ReqChangeConfig instance
+             */
+            public static create(properties?: bead.msg.IReqChangeConfig): bead.msg.ReqChangeConfig;
+
+            /**
+             * Encodes the specified ReqChangeConfig message. Does not implicitly {@link bead.msg.ReqChangeConfig.verify|verify} messages.
+             * @param message ReqChangeConfig message or plain object to encode
+             * @param [writer] Writer to encode to
+             * @returns Writer
+             */
+            public static encode(message: bead.msg.IReqChangeConfig, writer?: $protobuf.Writer): $protobuf.Writer;
+
+            /**
+             * Encodes the specified ReqChangeConfig message, length delimited. Does not implicitly {@link bead.msg.ReqChangeConfig.verify|verify} messages.
+             * @param message ReqChangeConfig message or plain object to encode
+             * @param [writer] Writer to encode to
+             * @returns Writer
+             */
+            public static encodeDelimited(message: bead.msg.IReqChangeConfig, writer?: $protobuf.Writer): $protobuf.Writer;
+
+            /**
+             * Decodes a ReqChangeConfig message from the specified reader or buffer.
+             * @param reader Reader or buffer to decode from
+             * @param [length] Message length if known beforehand
+             * @returns ReqChangeConfig
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): bead.msg.ReqChangeConfig;
+
+            /**
+             * Decodes a ReqChangeConfig message from the specified reader or buffer, length delimited.
+             * @param reader Reader or buffer to decode from
+             * @returns ReqChangeConfig
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): bead.msg.ReqChangeConfig;
+
+            /**
+             * Verifies a ReqChangeConfig message.
+             * @param message Plain object to verify
+             * @returns `null` if valid, otherwise the reason why it is not
+             */
+            public static verify(message: { [k: string]: any }): (string|null);
+
+            /**
+             * Creates a ReqChangeConfig message from a plain object. Also converts values to their respective internal types.
+             * @param object Plain object
+             * @returns ReqChangeConfig
+             */
+            public static fromObject(object: { [k: string]: any }): bead.msg.ReqChangeConfig;
+
+            /**
+             * Creates a plain object from a ReqChangeConfig message. Also converts values to other types if specified.
+             * @param message ReqChangeConfig
+             * @param [options] Conversion options
+             * @returns Plain object
+             */
+            public static toObject(message: bead.msg.ReqChangeConfig, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+            /**
+             * Converts this ReqChangeConfig to JSON.
+             * @returns JSON object
+             */
+            public toJSON(): { [k: string]: any };
+
+            /**
+             * Gets the default type url for ReqChangeConfig
+             * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+             * @returns The default type url
+             */
+            public static getTypeUrl(typeUrlPrefix?: string): string;
+        }
+
+        /** Properties of a ResChangeConfig. */
+        interface IResChangeConfig {
+
+            /** ResChangeConfig errorType */
+            errorType?: (bead.msg.ResChangeConfig.ErrorTypeT|null);
+        }
+
+        /** Represents a ResChangeConfig. */
+        class ResChangeConfig implements IResChangeConfig {
+
+            /**
+             * Constructs a new ResChangeConfig.
+             * @param [properties] Properties to set
+             */
+            constructor(properties?: bead.msg.IResChangeConfig);
+
+            /** ResChangeConfig errorType. */
+            public errorType: bead.msg.ResChangeConfig.ErrorTypeT;
+
+            /**
+             * Creates a new ResChangeConfig instance using the specified properties.
+             * @param [properties] Properties to set
+             * @returns ResChangeConfig instance
+             */
+            public static create(properties?: bead.msg.IResChangeConfig): bead.msg.ResChangeConfig;
+
+            /**
+             * Encodes the specified ResChangeConfig message. Does not implicitly {@link bead.msg.ResChangeConfig.verify|verify} messages.
+             * @param message ResChangeConfig message or plain object to encode
+             * @param [writer] Writer to encode to
+             * @returns Writer
+             */
+            public static encode(message: bead.msg.IResChangeConfig, writer?: $protobuf.Writer): $protobuf.Writer;
+
+            /**
+             * Encodes the specified ResChangeConfig message, length delimited. Does not implicitly {@link bead.msg.ResChangeConfig.verify|verify} messages.
+             * @param message ResChangeConfig message or plain object to encode
+             * @param [writer] Writer to encode to
+             * @returns Writer
+             */
+            public static encodeDelimited(message: bead.msg.IResChangeConfig, writer?: $protobuf.Writer): $protobuf.Writer;
+
+            /**
+             * Decodes a ResChangeConfig message from the specified reader or buffer.
+             * @param reader Reader or buffer to decode from
+             * @param [length] Message length if known beforehand
+             * @returns ResChangeConfig
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): bead.msg.ResChangeConfig;
+
+            /**
+             * Decodes a ResChangeConfig message from the specified reader or buffer, length delimited.
+             * @param reader Reader or buffer to decode from
+             * @returns ResChangeConfig
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): bead.msg.ResChangeConfig;
+
+            /**
+             * Verifies a ResChangeConfig message.
+             * @param message Plain object to verify
+             * @returns `null` if valid, otherwise the reason why it is not
+             */
+            public static verify(message: { [k: string]: any }): (string|null);
+
+            /**
+             * Creates a ResChangeConfig message from a plain object. Also converts values to their respective internal types.
+             * @param object Plain object
+             * @returns ResChangeConfig
+             */
+            public static fromObject(object: { [k: string]: any }): bead.msg.ResChangeConfig;
+
+            /**
+             * Creates a plain object from a ResChangeConfig message. Also converts values to other types if specified.
+             * @param message ResChangeConfig
+             * @param [options] Conversion options
+             * @returns Plain object
+             */
+            public static toObject(message: bead.msg.ResChangeConfig, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+            /**
+             * Converts this ResChangeConfig to JSON.
+             * @returns JSON object
+             */
+            public toJSON(): { [k: string]: any };
+
+            /**
+             * Gets the default type url for ResChangeConfig
+             * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+             * @returns The default type url
+             */
+            public static getTypeUrl(typeUrlPrefix?: string): string;
+        }
+
+        namespace ResChangeConfig {
+
+            /** ErrorTypeT enum. */
+            enum ErrorTypeT {
+                Success = 0,
+                Fail = 1
+            }
+        }
+
+        /** Properties of a ReqFileDelete. */
+        interface IReqFileDelete {
+
+            /** ReqFileDelete filepath */
+            filepath?: (string|null);
+        }
+
+        /** Represents a ReqFileDelete. */
+        class ReqFileDelete implements IReqFileDelete {
+
+            /**
+             * Constructs a new ReqFileDelete.
+             * @param [properties] Properties to set
+             */
+            constructor(properties?: bead.msg.IReqFileDelete);
+
+            /** ReqFileDelete filepath. */
+            public filepath: string;
+
+            /**
+             * Creates a new ReqFileDelete instance using the specified properties.
+             * @param [properties] Properties to set
+             * @returns ReqFileDelete instance
+             */
+            public static create(properties?: bead.msg.IReqFileDelete): bead.msg.ReqFileDelete;
+
+            /**
+             * Encodes the specified ReqFileDelete message. Does not implicitly {@link bead.msg.ReqFileDelete.verify|verify} messages.
+             * @param message ReqFileDelete message or plain object to encode
+             * @param [writer] Writer to encode to
+             * @returns Writer
+             */
+            public static encode(message: bead.msg.IReqFileDelete, writer?: $protobuf.Writer): $protobuf.Writer;
+
+            /**
+             * Encodes the specified ReqFileDelete message, length delimited. Does not implicitly {@link bead.msg.ReqFileDelete.verify|verify} messages.
+             * @param message ReqFileDelete message or plain object to encode
+             * @param [writer] Writer to encode to
+             * @returns Writer
+             */
+            public static encodeDelimited(message: bead.msg.IReqFileDelete, writer?: $protobuf.Writer): $protobuf.Writer;
+
+            /**
+             * Decodes a ReqFileDelete message from the specified reader or buffer.
+             * @param reader Reader or buffer to decode from
+             * @param [length] Message length if known beforehand
+             * @returns ReqFileDelete
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): bead.msg.ReqFileDelete;
+
+            /**
+             * Decodes a ReqFileDelete message from the specified reader or buffer, length delimited.
+             * @param reader Reader or buffer to decode from
+             * @returns ReqFileDelete
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): bead.msg.ReqFileDelete;
+
+            /**
+             * Verifies a ReqFileDelete message.
+             * @param message Plain object to verify
+             * @returns `null` if valid, otherwise the reason why it is not
+             */
+            public static verify(message: { [k: string]: any }): (string|null);
+
+            /**
+             * Creates a ReqFileDelete message from a plain object. Also converts values to their respective internal types.
+             * @param object Plain object
+             * @returns ReqFileDelete
+             */
+            public static fromObject(object: { [k: string]: any }): bead.msg.ReqFileDelete;
+
+            /**
+             * Creates a plain object from a ReqFileDelete message. Also converts values to other types if specified.
+             * @param message ReqFileDelete
+             * @param [options] Conversion options
+             * @returns Plain object
+             */
+            public static toObject(message: bead.msg.ReqFileDelete, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+            /**
+             * Converts this ReqFileDelete to JSON.
+             * @returns JSON object
+             */
+            public toJSON(): { [k: string]: any };
+
+            /**
+             * Gets the default type url for ReqFileDelete
+             * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+             * @returns The default type url
+             */
+            public static getTypeUrl(typeUrlPrefix?: string): string;
+        }
+
+        /** Properties of a ResFileDelete. */
+        interface IResFileDelete {
+
+            /** ResFileDelete success */
+            success?: (boolean|null);
+        }
+
+        /** Represents a ResFileDelete. */
+        class ResFileDelete implements IResFileDelete {
+
+            /**
+             * Constructs a new ResFileDelete.
+             * @param [properties] Properties to set
+             */
+            constructor(properties?: bead.msg.IResFileDelete);
+
+            /** ResFileDelete success. */
+            public success: boolean;
+
+            /**
+             * Creates a new ResFileDelete instance using the specified properties.
+             * @param [properties] Properties to set
+             * @returns ResFileDelete instance
+             */
+            public static create(properties?: bead.msg.IResFileDelete): bead.msg.ResFileDelete;
+
+            /**
+             * Encodes the specified ResFileDelete message. Does not implicitly {@link bead.msg.ResFileDelete.verify|verify} messages.
+             * @param message ResFileDelete message or plain object to encode
+             * @param [writer] Writer to encode to
+             * @returns Writer
+             */
+            public static encode(message: bead.msg.IResFileDelete, writer?: $protobuf.Writer): $protobuf.Writer;
+
+            /**
+             * Encodes the specified ResFileDelete message, length delimited. Does not implicitly {@link bead.msg.ResFileDelete.verify|verify} messages.
+             * @param message ResFileDelete message or plain object to encode
+             * @param [writer] Writer to encode to
+             * @returns Writer
+             */
+            public static encodeDelimited(message: bead.msg.IResFileDelete, writer?: $protobuf.Writer): $protobuf.Writer;
+
+            /**
+             * Decodes a ResFileDelete message from the specified reader or buffer.
+             * @param reader Reader or buffer to decode from
+             * @param [length] Message length if known beforehand
+             * @returns ResFileDelete
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): bead.msg.ResFileDelete;
+
+            /**
+             * Decodes a ResFileDelete message from the specified reader or buffer, length delimited.
+             * @param reader Reader or buffer to decode from
+             * @returns ResFileDelete
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): bead.msg.ResFileDelete;
+
+            /**
+             * Verifies a ResFileDelete message.
+             * @param message Plain object to verify
+             * @returns `null` if valid, otherwise the reason why it is not
+             */
+            public static verify(message: { [k: string]: any }): (string|null);
+
+            /**
+             * Creates a ResFileDelete message from a plain object. Also converts values to their respective internal types.
+             * @param object Plain object
+             * @returns ResFileDelete
+             */
+            public static fromObject(object: { [k: string]: any }): bead.msg.ResFileDelete;
+
+            /**
+             * Creates a plain object from a ResFileDelete message. Also converts values to other types if specified.
+             * @param message ResFileDelete
+             * @param [options] Conversion options
+             * @returns Plain object
+             */
+            public static toObject(message: bead.msg.ResFileDelete, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+            /**
+             * Converts this ResFileDelete to JSON.
+             * @returns JSON object
+             */
+            public toJSON(): { [k: string]: any };
+
+            /**
+             * Gets the default type url for ResFileDelete
+             * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+             * @returns The default type url
+             */
+            public static getTypeUrl(typeUrlPrefix?: string): string;
+        }
+
+        /** Properties of a ReqClearCache. */
+        interface IReqClearCache {
+        }
+
+        /** Represents a ReqClearCache. */
+        class ReqClearCache implements IReqClearCache {
+
+            /**
+             * Constructs a new ReqClearCache.
+             * @param [properties] Properties to set
+             */
+            constructor(properties?: bead.msg.IReqClearCache);
+
+            /**
+             * Creates a new ReqClearCache instance using the specified properties.
+             * @param [properties] Properties to set
+             * @returns ReqClearCache instance
+             */
+            public static create(properties?: bead.msg.IReqClearCache): bead.msg.ReqClearCache;
+
+            /**
+             * Encodes the specified ReqClearCache message. Does not implicitly {@link bead.msg.ReqClearCache.verify|verify} messages.
+             * @param message ReqClearCache message or plain object to encode
+             * @param [writer] Writer to encode to
+             * @returns Writer
+             */
+            public static encode(message: bead.msg.IReqClearCache, writer?: $protobuf.Writer): $protobuf.Writer;
+
+            /**
+             * Encodes the specified ReqClearCache message, length delimited. Does not implicitly {@link bead.msg.ReqClearCache.verify|verify} messages.
+             * @param message ReqClearCache message or plain object to encode
+             * @param [writer] Writer to encode to
+             * @returns Writer
+             */
+            public static encodeDelimited(message: bead.msg.IReqClearCache, writer?: $protobuf.Writer): $protobuf.Writer;
+
+            /**
+             * Decodes a ReqClearCache message from the specified reader or buffer.
+             * @param reader Reader or buffer to decode from
+             * @param [length] Message length if known beforehand
+             * @returns ReqClearCache
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): bead.msg.ReqClearCache;
+
+            /**
+             * Decodes a ReqClearCache message from the specified reader or buffer, length delimited.
+             * @param reader Reader or buffer to decode from
+             * @returns ReqClearCache
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): bead.msg.ReqClearCache;
+
+            /**
+             * Verifies a ReqClearCache message.
+             * @param message Plain object to verify
+             * @returns `null` if valid, otherwise the reason why it is not
+             */
+            public static verify(message: { [k: string]: any }): (string|null);
+
+            /**
+             * Creates a ReqClearCache message from a plain object. Also converts values to their respective internal types.
+             * @param object Plain object
+             * @returns ReqClearCache
+             */
+            public static fromObject(object: { [k: string]: any }): bead.msg.ReqClearCache;
+
+            /**
+             * Creates a plain object from a ReqClearCache message. Also converts values to other types if specified.
+             * @param message ReqClearCache
+             * @param [options] Conversion options
+             * @returns Plain object
+             */
+            public static toObject(message: bead.msg.ReqClearCache, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+            /**
+             * Converts this ReqClearCache to JSON.
+             * @returns JSON object
+             */
+            public toJSON(): { [k: string]: any };
+
+            /**
+             * Gets the default type url for ReqClearCache
+             * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+             * @returns The default type url
+             */
+            public static getTypeUrl(typeUrlPrefix?: string): string;
+        }
+
+        /** Properties of a ResClearCache. */
+        interface IResClearCache {
+
+            /** ResClearCache success */
+            success?: (boolean|null);
+        }
+
+        /** Represents a ResClearCache. */
+        class ResClearCache implements IResClearCache {
+
+            /**
+             * Constructs a new ResClearCache.
+             * @param [properties] Properties to set
+             */
+            constructor(properties?: bead.msg.IResClearCache);
+
+            /** ResClearCache success. */
+            public success: boolean;
+
+            /**
+             * Creates a new ResClearCache instance using the specified properties.
+             * @param [properties] Properties to set
+             * @returns ResClearCache instance
+             */
+            public static create(properties?: bead.msg.IResClearCache): bead.msg.ResClearCache;
+
+            /**
+             * Encodes the specified ResClearCache message. Does not implicitly {@link bead.msg.ResClearCache.verify|verify} messages.
+             * @param message ResClearCache message or plain object to encode
+             * @param [writer] Writer to encode to
+             * @returns Writer
+             */
+            public static encode(message: bead.msg.IResClearCache, writer?: $protobuf.Writer): $protobuf.Writer;
+
+            /**
+             * Encodes the specified ResClearCache message, length delimited. Does not implicitly {@link bead.msg.ResClearCache.verify|verify} messages.
+             * @param message ResClearCache message or plain object to encode
+             * @param [writer] Writer to encode to
+             * @returns Writer
+             */
+            public static encodeDelimited(message: bead.msg.IResClearCache, writer?: $protobuf.Writer): $protobuf.Writer;
+
+            /**
+             * Decodes a ResClearCache message from the specified reader or buffer.
+             * @param reader Reader or buffer to decode from
+             * @param [length] Message length if known beforehand
+             * @returns ResClearCache
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): bead.msg.ResClearCache;
+
+            /**
+             * Decodes a ResClearCache message from the specified reader or buffer, length delimited.
+             * @param reader Reader or buffer to decode from
+             * @returns ResClearCache
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): bead.msg.ResClearCache;
+
+            /**
+             * Verifies a ResClearCache message.
+             * @param message Plain object to verify
+             * @returns `null` if valid, otherwise the reason why it is not
+             */
+            public static verify(message: { [k: string]: any }): (string|null);
+
+            /**
+             * Creates a ResClearCache message from a plain object. Also converts values to their respective internal types.
+             * @param object Plain object
+             * @returns ResClearCache
+             */
+            public static fromObject(object: { [k: string]: any }): bead.msg.ResClearCache;
+
+            /**
+             * Creates a plain object from a ResClearCache message. Also converts values to other types if specified.
+             * @param message ResClearCache
+             * @param [options] Conversion options
+             * @returns Plain object
+             */
+            public static toObject(message: bead.msg.ResClearCache, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+            /**
+             * Converts this ResClearCache to JSON.
+             * @returns JSON object
+             */
+            public toJSON(): { [k: string]: any };
+
+            /**
+             * Gets the default type url for ResClearCache
+             * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+             * @returns The default type url
+             */
+            public static getTypeUrl(typeUrlPrefix?: string): string;
+        }
+
+        /** Properties of a ReqReParseFile. */
+        interface IReqReParseFile {
+
+            /** ReqReParseFile filepath */
+            filepath?: (string|null);
+        }
+
+        /** Represents a ReqReParseFile. */
+        class ReqReParseFile implements IReqReParseFile {
+
+            /**
+             * Constructs a new ReqReParseFile.
+             * @param [properties] Properties to set
+             */
+            constructor(properties?: bead.msg.IReqReParseFile);
+
+            /** ReqReParseFile filepath. */
+            public filepath: string;
+
+            /**
+             * Creates a new ReqReParseFile instance using the specified properties.
+             * @param [properties] Properties to set
+             * @returns ReqReParseFile instance
+             */
+            public static create(properties?: bead.msg.IReqReParseFile): bead.msg.ReqReParseFile;
+
+            /**
+             * Encodes the specified ReqReParseFile message. Does not implicitly {@link bead.msg.ReqReParseFile.verify|verify} messages.
+             * @param message ReqReParseFile message or plain object to encode
+             * @param [writer] Writer to encode to
+             * @returns Writer
+             */
+            public static encode(message: bead.msg.IReqReParseFile, writer?: $protobuf.Writer): $protobuf.Writer;
+
+            /**
+             * Encodes the specified ReqReParseFile message, length delimited. Does not implicitly {@link bead.msg.ReqReParseFile.verify|verify} messages.
+             * @param message ReqReParseFile message or plain object to encode
+             * @param [writer] Writer to encode to
+             * @returns Writer
+             */
+            public static encodeDelimited(message: bead.msg.IReqReParseFile, writer?: $protobuf.Writer): $protobuf.Writer;
+
+            /**
+             * Decodes a ReqReParseFile message from the specified reader or buffer.
+             * @param reader Reader or buffer to decode from
+             * @param [length] Message length if known beforehand
+             * @returns ReqReParseFile
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): bead.msg.ReqReParseFile;
+
+            /**
+             * Decodes a ReqReParseFile message from the specified reader or buffer, length delimited.
+             * @param reader Reader or buffer to decode from
+             * @returns ReqReParseFile
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): bead.msg.ReqReParseFile;
+
+            /**
+             * Verifies a ReqReParseFile message.
+             * @param message Plain object to verify
+             * @returns `null` if valid, otherwise the reason why it is not
+             */
+            public static verify(message: { [k: string]: any }): (string|null);
+
+            /**
+             * Creates a ReqReParseFile message from a plain object. Also converts values to their respective internal types.
+             * @param object Plain object
+             * @returns ReqReParseFile
+             */
+            public static fromObject(object: { [k: string]: any }): bead.msg.ReqReParseFile;
+
+            /**
+             * Creates a plain object from a ReqReParseFile message. Also converts values to other types if specified.
+             * @param message ReqReParseFile
+             * @param [options] Conversion options
+             * @returns Plain object
+             */
+            public static toObject(message: bead.msg.ReqReParseFile, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+            /**
+             * Converts this ReqReParseFile to JSON.
+             * @returns JSON object
+             */
+            public toJSON(): { [k: string]: any };
+
+            /**
+             * Gets the default type url for ReqReParseFile
+             * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+             * @returns The default type url
+             */
+            public static getTypeUrl(typeUrlPrefix?: string): string;
+        }
+
+        /** Properties of a ResReParseFile. */
+        interface IResReParseFile {
+
+            /** ResReParseFile errorType */
+            errorType?: (bead.msg.ResReParseFile.ErrorTypeT|null);
+        }
+
+        /** Represents a ResReParseFile. */
+        class ResReParseFile implements IResReParseFile {
+
+            /**
+             * Constructs a new ResReParseFile.
+             * @param [properties] Properties to set
+             */
+            constructor(properties?: bead.msg.IResReParseFile);
+
+            /** ResReParseFile errorType. */
+            public errorType: bead.msg.ResReParseFile.ErrorTypeT;
+
+            /**
+             * Creates a new ResReParseFile instance using the specified properties.
+             * @param [properties] Properties to set
+             * @returns ResReParseFile instance
+             */
+            public static create(properties?: bead.msg.IResReParseFile): bead.msg.ResReParseFile;
+
+            /**
+             * Encodes the specified ResReParseFile message. Does not implicitly {@link bead.msg.ResReParseFile.verify|verify} messages.
+             * @param message ResReParseFile message or plain object to encode
+             * @param [writer] Writer to encode to
+             * @returns Writer
+             */
+            public static encode(message: bead.msg.IResReParseFile, writer?: $protobuf.Writer): $protobuf.Writer;
+
+            /**
+             * Encodes the specified ResReParseFile message, length delimited. Does not implicitly {@link bead.msg.ResReParseFile.verify|verify} messages.
+             * @param message ResReParseFile message or plain object to encode
+             * @param [writer] Writer to encode to
+             * @returns Writer
+             */
+            public static encodeDelimited(message: bead.msg.IResReParseFile, writer?: $protobuf.Writer): $protobuf.Writer;
+
+            /**
+             * Decodes a ResReParseFile message from the specified reader or buffer.
+             * @param reader Reader or buffer to decode from
+             * @param [length] Message length if known beforehand
+             * @returns ResReParseFile
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): bead.msg.ResReParseFile;
+
+            /**
+             * Decodes a ResReParseFile message from the specified reader or buffer, length delimited.
+             * @param reader Reader or buffer to decode from
+             * @returns ResReParseFile
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): bead.msg.ResReParseFile;
+
+            /**
+             * Verifies a ResReParseFile message.
+             * @param message Plain object to verify
+             * @returns `null` if valid, otherwise the reason why it is not
+             */
+            public static verify(message: { [k: string]: any }): (string|null);
+
+            /**
+             * Creates a ResReParseFile message from a plain object. Also converts values to their respective internal types.
+             * @param object Plain object
+             * @returns ResReParseFile
+             */
+            public static fromObject(object: { [k: string]: any }): bead.msg.ResReParseFile;
+
+            /**
+             * Creates a plain object from a ResReParseFile message. Also converts values to other types if specified.
+             * @param message ResReParseFile
+             * @param [options] Conversion options
+             * @returns Plain object
+             */
+            public static toObject(message: bead.msg.ResReParseFile, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+            /**
+             * Converts this ResReParseFile to JSON.
+             * @returns JSON object
+             */
+            public toJSON(): { [k: string]: any };
+
+            /**
+             * Gets the default type url for ResReParseFile
+             * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+             * @returns The default type url
+             */
+            public static getTypeUrl(typeUrlPrefix?: string): string;
+        }
+
+        namespace ResReParseFile {
 
             /** ErrorTypeT enum. */
             enum ErrorTypeT {

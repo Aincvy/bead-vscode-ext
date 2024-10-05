@@ -1,4 +1,6 @@
 import { EventEmitter } from 'events';
+import * as vscode from 'vscode';
+
 import * as beadMessage from './bead_message';
 import { NetworkManager } from './network';
 
@@ -44,6 +46,18 @@ export class BeadMessageManager extends EventEmitter {
                 break;
             case beadMessage.bead.msg.MessageType.PingPong:
                 this.emit('onPingPong', message.id);
+                break;
+            case beadMessage.bead.msg.MessageType.ChangeConfig:
+                this.emit('onChangeConfig', message.id, beadMessage.bead.msg.ResChangeConfig.decode(message.msg!));
+                break;
+            case beadMessage.bead.msg.MessageType.FileDelete:
+                this.emit('onFileDelete', message.id, beadMessage.bead.msg.ResFileDelete.decode(message.msg!));
+                break;
+            case beadMessage.bead.msg.MessageType.ClearCache:
+                this.emit('onClearCache', message.id, beadMessage.bead.msg.ResClearCache.decode(message.msg!));
+                break;
+            case beadMessage.bead.msg.MessageType.ReParseFile:
+                this.emit('onReParseFile', message.id, beadMessage.bead.msg.ResReParseFile.decode(message.msg!));
                 break;
             // Add more cases as needed
         }
@@ -99,5 +113,40 @@ export class BeadMessageManager extends EventEmitter {
 
     public async sendPing(): Promise<number> {
         return await this.sendMessage(beadMessage.bead.msg.MessageType.PingPong, new Uint8Array());
+    }
+
+    public async sendChangeConfig(topicPrompt: string, functionReferenceCount: number): Promise<number> {
+        const message = beadMessage.bead.msg.ReqChangeConfig.create({
+            topicPrompt,
+            functionReferenceCount
+        });
+        const encodedMessage = beadMessage.bead.msg.ReqChangeConfig.encode(message).finish();
+        return await this.sendMessage(beadMessage.bead.msg.MessageType.ChangeConfig, encodedMessage);
+    }
+
+    public async sendFileDelete(filepath: string): Promise<number> {
+        const message = beadMessage.bead.msg.ReqFileDelete.create({ filepath });
+        const encodedMessage = beadMessage.bead.msg.ReqFileDelete.encode(message).finish();
+        return await this.sendMessage(beadMessage.bead.msg.MessageType.FileDelete, encodedMessage);
+    }
+
+    public async sendClearCache(): Promise<number> {
+        const message = beadMessage.bead.msg.ReqClearCache.create({});
+        const encodedMessage = beadMessage.bead.msg.ReqClearCache.encode(message).finish();
+        return await this.sendMessage(beadMessage.bead.msg.MessageType.ClearCache, encodedMessage);
+    }
+
+    public async sendReParseFile(filepath: string): Promise<number> {
+        const message = beadMessage.bead.msg.ReqReParseFile.create({ filepath });
+        const encodedMessage = beadMessage.bead.msg.ReqReParseFile.encode(message).finish();
+        return await this.sendMessage(beadMessage.bead.msg.MessageType.ReParseFile, encodedMessage);
+    }
+
+    public async handleFileDelete(event: vscode.FileDeleteEvent) {
+        for (const file of event.files) {
+            console.log('File deleted: ', file.fsPath);
+
+            await this.sendFileDelete(file.fsPath);
+        }
     }
 }

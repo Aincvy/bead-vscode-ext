@@ -1,81 +1,113 @@
 {
-  "name": "bead-auto-completion",
-  "displayName": "bead",
-  "description": "code auto completion via openai/fauxpilot",
-  "version": "0.0.1",
-  "author": {
-    "name": "Aincvy",
-    "email": "aincvy@gmail.com"
-  },
-  "engines": {
-    "vscode": "^1.92.0"
-  },
-  "categories": [
-    "Other"
-  ],
-  "activationEvents": ["onStartupFinished"],
-  "main": "./dist/extension",
-  "contributes": {
-    "commands": [
-      {
-        "command": "bead.connect",
-        "title": "Bead: connect to server"
-      }
+    "name": "bead-auto-completion",
+    "displayName": "bead",
+    "description": "code auto completion via openai/fauxpilot",
+    "version": "0.0.1",
+    "author": {
+        "name": "Aincvy",
+        "email": "aincvy@gmail.com"
+    },
+    "engines": {
+        "vscode": "^1.92.0"
+    },
+    "categories": [
+        "Other"
     ],
-    "configuration": {
-      "title": "Bead",
-      "properties": {
-        "bead.serverType": {
-          "type": "string",
-          "enum": [
-            "None",
-            "Manual"
-          ],
-          "default": "None",
-          "description": "Set the server type for Bead"
-        },
-        "bead.server.host": {
-          "type": "string",
-          "default": "127.0.0.1",
-          "description": "Set the server host for Bead"
-        },
-        "bead.server.port": {
-          "type": "number",
-          "default": 31551,
-          "description": "Set the server port for Bead"
-        },
-        "bead.autoTrigger": {
-          "type": "boolean",
-          "default": false,
-          "description": "Enable or disable auto-trigger for Bead"
+    "activationEvents": [
+        "onStartupFinished"
+    ],
+    "main": "./dist/extension",
+    "contributes": {
+        "commands": [
+            {
+                "command": "bead.connect",
+                "title": "Bead: connect to server"
+            },
+            {
+                "command": "bead.setTopicPrompt",
+                "title": "Bead: Set Topic Prompt"
+            },
+            {
+                "command": "bead.increaseFunctionReferenceCount",
+                "title": "Bead: Increase Function Reference Count"
+            },
+            {
+                "command": "bead.decreaseFunctionReferenceCount",
+                "title": "Bead: Decrease Function Reference Count"
+            },
+            {
+                "command": "bead.clearCache",
+                "title": "Bead: Clear Cache"
+            },
+            {
+                "command": "bead.reParseFile",
+                "title": "Bead: Re-Parse Current File"
+            }
+        ],
+        "configuration": {
+            "title": "Bead",
+            "properties": {
+                "bead.serverType": {
+                    "type": "string",
+                    "enum": [
+                        "None",
+                        "Manual"
+                    ],
+                    "default": "None",
+                    "description": "Set the server type for Bead"
+                },
+                "bead.server.host": {
+                    "type": "string",
+                    "default": "127.0.0.1",
+                    "description": "Set the server host for Bead"
+                },
+                "bead.server.port": {
+                    "type": "number",
+                    "default": 31551,
+                    "description": "Set the server port for Bead"
+                },
+                "bead.autoTrigger": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Enable or disable auto-trigger for Bead"
+                },
+                "bead.prompt.topic": {
+                    "type": "string",
+                    "default": "",
+                    "description": "Topic prompt for Bead"
+                },
+                "bead.prompt.functionReferenceCount": {
+                    "type": "number",
+                    "default": 1,
+                    "description": "Function reference count for Bead"
+                }
+            }
         }
-      }
+    },
+    "scripts": {
+        "test": "vscode-test",
+        "vscode:prepublish": "webpack --mode production",
+        "webpack": "webpack --mode development",
+        "webpack-dev": "webpack --mode development --watch",
+        "test-compile": "tsc -p ./",
+        "lint": "eslint \"src/**/*.ts\""
+    },
+    "devDependencies": {
+        "@types/mocha": "^10.0.7",
+        "@types/node": "20.x",
+        "@types/protobufjs": "^6.0.0",
+        "@types/vscode": "^1.92.0",
+        "@typescript-eslint/eslint-plugin": "^7.14.1",
+        "@typescript-eslint/parser": "^7.11.0",
+        "@vscode/test-cli": "^0.0.9",
+        "@vscode/test-electron": "^2.4.0",
+        "eslint": "^8.57.0",
+        "ts-loader": "^9.5.1",
+        "typescript": "^5.4.5",
+        "webpack": "^5.94.0",
+        "webpack-cli": "^5.1.4"
+    },
+    "dependencies": {
+        "protobufjs": "^7.4.0"
     }
-  },
-  "scripts": {
-    "test": "vscode-test",
-    "vscode:prepublish": "webpack --mode production",
-    "webpack": "webpack --mode development",
-    "webpack-dev": "webpack --mode development --watch",
-    "test-compile": "tsc -p ./",
-    "lint": "eslint \"src/**/*.ts\""
-},
-  "devDependencies": {
-    "@types/mocha": "^10.0.7",
-    "@types/node": "20.x",
-    "@types/protobufjs": "^6.0.0",
-    "@types/vscode": "^1.92.0",
-    "@typescript-eslint/eslint-plugin": "^7.14.1",
-    "@typescript-eslint/parser": "^7.11.0",
-    "@vscode/test-cli": "^0.0.9",
-    "@vscode/test-electron": "^2.4.0",
-    "eslint": "^8.57.0",
-    "ts-loader": "^9.5.1",
-    "typescript": "^5.4.5",
-    "webpack": "^5.94.0",
-    "webpack-cli": "^5.1.4"
-  },
-  "dependencies": {
-    "protobufjs": "^7.4.0"
-  }
 }
