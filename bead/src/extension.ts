@@ -183,7 +183,8 @@ export function activate(context: vscode.ExtensionContext) {
         [
             { scheme: 'file', language: 'c' },
             { scheme: 'file', language: 'cpp' },
-            { scheme: 'file', pattern: '**/*.h' }
+            { scheme: 'file', pattern: '**/*.h' },
+            { scheme: 'file', language: 'java' },
         ],
         {
             async provideInlineCompletionItems(document: vscode.TextDocument, position: vscode.Position, context: vscode.InlineCompletionContext, cancelToken: vscode.CancellationToken) {

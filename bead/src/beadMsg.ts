@@ -105,7 +105,13 @@ export class BeadMessageManager extends EventEmitter {
         return await this.sendMessage(beadMessage.bead.msg.MessageType.InitProject, encodedMessage);
     }
 
-    public async sendOpenFile(filepath: string): Promise<number> {
+    public async sendOpenFile(filepath: string): Promise<number | null> {
+        // 检查文件路径是否以 .git 结尾
+        if (filepath.endsWith('.git')) {
+            console.log(`Skipping file with .git extension: ${filepath}`);
+            return null;
+        }
+
         const message = beadMessage.bead.msg.ReqOpenFile.create({ filepath });
         const encodedMessage = beadMessage.bead.msg.ReqOpenFile.encode(message).finish();
         return await this.sendMessage(beadMessage.bead.msg.MessageType.OpenFile, encodedMessage);
