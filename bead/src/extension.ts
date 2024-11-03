@@ -138,6 +138,16 @@ export function activate(context: vscode.ExtensionContext) {
     const onDidChangeTextDocumentDisposable = vscode.workspace.onDidChangeTextDocument(event => {
         const document = event.document;
 
+        const filepath = document.uri.fsPath;
+        // 过滤条件
+        if (filepath.includes('extension-output-') ||
+            document.uri.scheme === 'output' ||
+            document.uri.scheme === 'debug' ||  // 排除调试输出
+            filepath.startsWith('output:') ||   // 排除输出面板
+            document.languageId === 'log') {    // 排除日志文件
+            return;
+        }
+
         // 在这里添加发送消息的代码
         event.contentChanges.forEach(change => {
             const filepath = document.uri.fsPath; // 获取文档的绝对路径
