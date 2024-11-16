@@ -6,6 +6,7 @@ import { BeadMessageManager } from './beadMsg';
 import * as beadMessage from './bead_message';
 import * as path from 'path';
 import { ConfigManager } from './config';
+import { sleep } from './utils';
 
 const runtimeEntity = {
     project: {
@@ -33,36 +34,31 @@ beadMsgManager.setNetworkManager(networkManager);
 
 const globalMessageMap = new Map<number, beadMessage.bead.msg.IResTextCompletion>();
 
-// 定义类型A
-type A = [number, Promise<(items: vscode.InlineCompletionItem[]) => void>];
 
-// 声明类型A的全局列表变量L
-let L: A[] = [];
+function createCompletionItems(res: beadMessage.bead.msg.IResTextCompletion, pos: vscode.Position): vscode.ProviderResult<vscode.InlineCompletionItem[]> {
+    if (res.errorType === beadMessage.bead.msg.ResTextCompletion.ErrorTypeT.Success && (res.content?.length ?? 0) > 0) {
+        const completionItem = new vscode.InlineCompletionItem(res.content || "", new vscode.Range(pos, pos.translate(0, res.content?.length)));
+        // completionItem.insertText = res.content || '';
+        console.log('content is !!! ', completionItem.insertText);
 
-function createCompletionItems(res: beadMessage.bead.msg.IResTextCompletion): vscode.InlineCompletionItem[] {
-    if (res.errorType === beadMessage.bead.msg.ResTextCompletion.ErrorTypeT.Success) {
-        const completionItem = new vscode.InlineCompletionItem(res.content || "");
-        completionItem.insertText = res.content || '';
         return [completionItem];
-    }
+    } 
+
+    console.log('completion failed: ', res.errorType);
     return [];
 }
 
 beadMsgManager.on('onTextCompletion', (id: number, res: beadMessage.bead.msg.IResTextCompletion) => {
     console.log('Received text completion:', id, res.content);
 
-    // 将消息存储到全局 Map 中
-    // globalMessageMap.set(id, res);
+    // 将结果放入globalMessageMap
+    globalMessageMap.set(id, res);
 
-    const index = L.findIndex(([msgId]) => msgId === id);
-    if (index !== -1) {
-        // 如果在L中找到对应的id，设置结果
-        L[index][1].then(resolve => resolve(createCompletionItems(res)));
-        // 移除L中id小于等于当前id的元素
-        L = L.filter(([msgId]) => msgId > id);
-    } else {
-        // 如果不在L中，将结果放入globalMessageMap
-        globalMessageMap.set(id, res);
+    // 移除 key 小于id 的所有元素
+    for (const key of globalMessageMap.keys()) {
+        if (key < id) {
+            globalMessageMap.delete(key);
+        }
     }
 });
 beadMsgManager.on('onPingPong', (id: number) => {
@@ -209,21 +205,27 @@ export function activate(context: vscode.ExtensionContext) {
                 console.log("provideInlineCompletionItems at line:", line);
                 try {
                     const messageId = await beadMsgManager.sendTextCompletion(filepath, line, column);
-                    if (cancelToken.isCancellationRequested) {
-                        return [];
-                    }
 
-                    // 检查 globalMessageMap 是否存在结果
-                    if (globalMessageMap.has(messageId)) {
-                        const res = globalMessageMap.get(messageId)!;
-                        globalMessageMap.delete(messageId);
-                        return createCompletionItems(res);
-                    } else {
-                        // 如果不存在，创建一个新的 Promise 并添加到 L 中
-                        return new Promise<vscode.InlineCompletionItem[]>((resolve) => {
-                            L.push([messageId, Promise.resolve(resolve)]);
-                        });
+                    let i = 0;
+                    while (i++ < 90) {
+                        if (cancelToken.isCancellationRequested) {
+                            return [];
+                        }
+
+                        // 检查 globalMessageMap 是否存在结果
+                        if (globalMessageMap.has(messageId)) {
+                            console.log('return to vscode, messageId: ', messageId);
+                            const res = globalMessageMap.get(messageId)!;
+                            globalMessageMap.delete(messageId);
+                            return createCompletionItems(res, position);
+                        } 
+
+                        // console.log('wait once');
+                        await sleep(25);
                     }
+                    
+                    console.log("messageId: ", messageId, " timeout!");
+                    return [];
                 } catch (error) {
                     console.error('Error in completion provider:', error);
                     return [];
