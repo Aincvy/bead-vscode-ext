@@ -106,17 +106,3 @@ export class NetworkManager extends EventEmitter {
         this.connect();
     }
 }
-
-// 使用示例
-// const networkManager = new NetworkManager();
-// networkManager.on('connected', () => {
-//     console.log('Connected to server');
-// });
-// networkManager.on('message', (data) => {
-//     // 处理接收到的消息
-//     console.log('Received message:', data);
-// });
-//
-// // 发送消息
-// const message = /* 创建 protobuf 消息 */;
-// networkManager.send(message).catch(console.error);

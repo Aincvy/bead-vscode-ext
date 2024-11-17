@@ -119,12 +119,15 @@ export function activate(context: vscode.ExtensionContext) {
 	console.log('Congratulations, your extension "bead" is now active!');
 
     const configManager = ConfigManager.getInstance();
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with registerCommand
-	// The commandId parameter must match the command field in package.json
-	const disposable = vscode.commands.registerCommand('bead.connect', () => {
-		// The code you place here will be executed every time your command is executed
-		// Display a message box to the user
+    
+	const disposable = vscode.commands.registerCommand('bead.connect', async () => {
+        const saved = await vscode.workspace.saveAll();
+
+        if (!saved) {
+            // 用户取消了保存操作
+            return;
+        }
+
         vscode.window.showInformationMessage('bead: try connect to server');
         networkManager.connect();
     });
@@ -233,15 +236,28 @@ export function activate(context: vscode.ExtensionContext) {
             }
         }
     );
+    const onFileRename = vscode.workspace.onDidRenameFiles(async (e: vscode.FileRenameEvent) => {
+        // e.files 是一个数组，包含了所有被移动的文件信息
+        // 每个文件都有 oldUri 和 newUri 属性
+        for (const { oldUri, newUri } of e.files) {
+            beadMsgManager.sendFileDelete(oldUri.fsPath);
+        }
+
+        await sleep(25);
+        for (const { oldUri, newUri } of e.files) {
+            beadMsgManager.sendOpenFile(newUri.fsPath);
+        }
+
+    });
 
     context.subscriptions.push(disposable);
     context.subscriptions.push(onDidChangeTextDocumentDisposable);
     context.subscriptions.push(workspaceFoldersChangeDisposable);
-    context.subscriptions.push(textDocumentOpenedDisposable);
     context.subscriptions.push(provider);
 
+    context.subscriptions.push(textDocumentOpenedDisposable);
+    context.subscriptions.push(onFileRename);
     context.subscriptions.push(vscode.workspace.onDidDeleteFiles(beadMsgManager.handleFileDelete));
-
 
     registerCommands(context);
 }
