@@ -149,6 +149,8 @@ export class BeadMessageManager extends EventEmitter {
     }
 
     public async handleFileDelete(event: vscode.FileDeleteEvent) {
+        console.log('File deleted count: ', event.files.length);
+
         for (const file of event.files) {
             console.log('File deleted: ', file.fsPath);
 

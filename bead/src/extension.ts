@@ -136,8 +136,9 @@ export function activate(context: vscode.ExtensionContext) {
 
     const onDidChangeTextDocumentDisposable = vscode.workspace.onDidChangeTextDocument(event => {
         const document = event.document;
-
         const filepath = document.uri.fsPath;
+
+        // console.log('onDidChangeTextDocument: ', filepath, event.contentChanges);
         // 过滤条件
         if (filepath.includes('extension-output-') ||
             document.uri.scheme === 'output' ||
@@ -240,11 +241,13 @@ export function activate(context: vscode.ExtensionContext) {
         // e.files 是一个数组，包含了所有被移动的文件信息
         // 每个文件都有 oldUri 和 newUri 属性
         for (const { oldUri, newUri } of e.files) {
+            console.log("send file delete: ", oldUri.fsPath);
             beadMsgManager.sendFileDelete(oldUri.fsPath);
         }
 
         await sleep(25);
         for (const { oldUri, newUri } of e.files) {
+            console.log("send file open: ", oldUri.fsPath);
             beadMsgManager.sendOpenFile(newUri.fsPath);
         }
 
