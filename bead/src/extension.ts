@@ -250,7 +250,14 @@ export function activate(context: vscode.ExtensionContext) {
             console.log("send file open: ", oldUri.fsPath);
             beadMsgManager.sendOpenFile(newUri.fsPath);
         }
+    });
 
+    const onFileDeleted = vscode.workspace.onDidDeleteFiles(async (event: vscode.FileDeleteEvent) => {
+        for (const file of event.files) {
+            console.log('File deleted: ', file.fsPath);
+
+            await beadMsgManager.sendFileDelete(file.fsPath);
+        }
     });
 
     context.subscriptions.push(disposable);
@@ -260,7 +267,8 @@ export function activate(context: vscode.ExtensionContext) {
 
     context.subscriptions.push(textDocumentOpenedDisposable);
     context.subscriptions.push(onFileRename);
-    context.subscriptions.push(vscode.workspace.onDidDeleteFiles(beadMsgManager.handleFileDelete));
+    context.subscriptions.push(onFileDeleted);
+    context.subscriptions.push(vscode.workspace.onWillDeleteFiles(e => console.log('will delete file event, count ', e.files.length)));
 
     registerCommands(context);
 }
