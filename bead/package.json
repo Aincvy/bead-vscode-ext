@@ -42,6 +42,10 @@
             {
                 "command": "bead.reParseFile",
                 "title": "Bead: Re-Parse Current File"
+            }, 
+            {
+                "command": "bead.exportTypePrompt",
+                "title": "Bead: Export type related prompt"
             }
         ],
         "configuration": {

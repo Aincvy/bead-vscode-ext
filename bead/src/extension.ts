@@ -65,12 +65,33 @@ beadMsgManager.on('onPingPong', (id: number) => {
     console.log('Received ping pong:', id);
 });
 
+beadMsgManager.on('onExportTypePrompt', (id: number, res : beadMessage.bead.msg.IResExportTypePrompt) => {
+    console.log('Received export type prompt:', id, res.errorType);
+    if (res.errorType !== beadMessage.bead.msg.ResExportTypePrompt.ErrorTypeT.Success) {
+        // show 一个提示
+        vscode.window.showErrorMessage("Export type prompt failed!");
+    }
+});
+
 ConfigManager.getInstance().on('prompt-config-changed', (mgr: ConfigManager) => {
     const config = mgr.getConfig();
     beadMsgManager.sendChangeConfig(config.prompt.topic, config.prompt.functionReferenceCount);
 });
 
 export function registerCommands(context: vscode.ExtensionContext) {
+    const disposable = vscode.commands.registerCommand('bead.connect', async () => {
+        const saved = await vscode.workspace.saveAll();
+
+        if (!saved) {
+            // 用户取消了保存操作
+            return;
+        }
+
+        vscode.window.showInformationMessage('bead: try connect to server');
+        networkManager.connect();
+    });
+    context.subscriptions.push(disposable);
+
     context.subscriptions.push(
         vscode.commands.registerCommand('bead.setTopicPrompt', async () => {
             const topicPrompt = await vscode.window.showInputBox({
@@ -110,6 +131,20 @@ export function registerCommands(context: vscode.ExtensionContext) {
         }
     });
     context.subscriptions.push(clearCacheCommand);
+
+    // bead.exportTypePrompt
+    const exportTypePromptCommand = vscode.commands.registerCommand('bead.exportTypePrompt', async (document: vscode.TextDocument, range: vscode.Range) => {
+        if (!document || !range) {
+            vscode.window.showInformationMessage('bead: use source action to export type related prompt.');
+            return;
+        }
+
+        const filePath = document.uri.fsPath;
+        beadMsgManager.sendExportTypePrompt(filePath, range);
+        console.log('send exportTypePromptCommand', filePath, range);
+    });
+    context.subscriptions.push(exportTypePromptCommand);
+
 }
 
 
@@ -119,19 +154,7 @@ export function activate(context: vscode.ExtensionContext) {
 	console.log('Congratulations, your extension "bead" is now active!');
 
     const configManager = ConfigManager.getInstance();
-    
-	const disposable = vscode.commands.registerCommand('bead.connect', async () => {
-        const saved = await vscode.workspace.saveAll();
-
-        if (!saved) {
-            // 用户取消了保存操作
-            return;
-        }
-
-        vscode.window.showInformationMessage('bead: try connect to server');
-        networkManager.connect();
-    });
-    
+        
     networkManager.connect();
 
     const onDidChangeTextDocumentDisposable = vscode.workspace.onDidChangeTextDocument(event => {
@@ -260,7 +283,6 @@ export function activate(context: vscode.ExtensionContext) {
         }
     });
 
-    context.subscriptions.push(disposable);
     context.subscriptions.push(onDidChangeTextDocumentDisposable);
     context.subscriptions.push(workspaceFoldersChangeDisposable);
     context.subscriptions.push(provider);
@@ -271,6 +293,8 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(vscode.workspace.onWillDeleteFiles(e => console.log('will delete file event, count ', e.files.length)));
 
     registerCommands(context);
+
+    registerCodeActions(context);    
 }
 
 
@@ -297,5 +321,38 @@ function checkCurrentWorkspace() {
             break;  // only can open 1 folder now 
         }
     } 
+}
+
+function registerCodeActions(context: vscode.ExtensionContext) {
+    const provider = vscode.languages.registerCodeActionsProvider(
+        [
+            { scheme: 'file', language: 'java' },
+        ],
+        {
+            provideCodeActions(
+                document: vscode.TextDocument,
+                range: vscode.Range,
+                context: vscode.CodeActionContext,
+                token: vscode.CancellationToken
+            ): vscode.CodeAction[] {
+                const action = new vscode.CodeAction(
+                    'exportTypePrompt',
+                    vscode.CodeActionKind.Empty
+                );
+
+                // 把 range 信息传递给命令
+                action.command = {
+                    command: 'bead.exportTypePrompt',
+                    title: 'exportTypePrompt',
+                    // 可以通过参数传递更多信息
+                    arguments: [document, range]
+                };
+
+                return [action];
+            }
+        }
+    );
+
+    context.subscriptions.push(provider);
 }
 

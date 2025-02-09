@@ -148,5 +148,17 @@ export class BeadMessageManager extends EventEmitter {
         return await this.sendMessage(beadMessage.bead.msg.MessageType.ReParseFile, encodedMessage);
     }
 
+    public async sendExportTypePrompt(filepath: string, range: vscode.Range): Promise < number > {
+        // 将 vscode.Range 的起始位置转换为 LineAndColumn
+        const pos = beadMessage.bead.msg.LineAndColumn.create({
+            line: range.start.line, 
+            column: range.start.character 
+        });
+
+        const message = beadMessage.bead.msg.ReqExportTypePrompt.create({ filepath, pos });
+        const encodedMessage = beadMessage.bead.msg.ReqExportTypePrompt.encode(message).finish();
+        return await this.sendMessage(beadMessage.bead.msg.MessageType.ExportTypePrompt, encodedMessage);
+    }
+        
 
 }

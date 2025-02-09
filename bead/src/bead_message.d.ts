@@ -17,7 +17,8 @@ export namespace bead {
             ChangeConfig = 6,
             FileDelete = 7,
             ClearCache = 8,
-            ReParseFile = 9
+            ReParseFile = 9,
+            ExportTypePrompt = 10
         }
 
         /** Properties of a BeadSingleMessage. */
@@ -1966,6 +1967,215 @@ export namespace bead {
         }
 
         namespace ResReParseFile {
+
+            /** ErrorTypeT enum. */
+            enum ErrorTypeT {
+                Success = 0,
+                Fail = 1
+            }
+        }
+
+        /** Properties of a ReqExportTypePrompt. */
+        interface IReqExportTypePrompt {
+
+            /** ReqExportTypePrompt filepath */
+            filepath?: (string|null);
+
+            /** ReqExportTypePrompt pos */
+            pos?: (bead.msg.ILineAndColumn|null);
+        }
+
+        /** Represents a ReqExportTypePrompt. */
+        class ReqExportTypePrompt implements IReqExportTypePrompt {
+
+            /**
+             * Constructs a new ReqExportTypePrompt.
+             * @param [properties] Properties to set
+             */
+            constructor(properties?: bead.msg.IReqExportTypePrompt);
+
+            /** ReqExportTypePrompt filepath. */
+            public filepath: string;
+
+            /** ReqExportTypePrompt pos. */
+            public pos?: (bead.msg.ILineAndColumn|null);
+
+            /**
+             * Creates a new ReqExportTypePrompt instance using the specified properties.
+             * @param [properties] Properties to set
+             * @returns ReqExportTypePrompt instance
+             */
+            public static create(properties?: bead.msg.IReqExportTypePrompt): bead.msg.ReqExportTypePrompt;
+
+            /**
+             * Encodes the specified ReqExportTypePrompt message. Does not implicitly {@link bead.msg.ReqExportTypePrompt.verify|verify} messages.
+             * @param message ReqExportTypePrompt message or plain object to encode
+             * @param [writer] Writer to encode to
+             * @returns Writer
+             */
+            public static encode(message: bead.msg.IReqExportTypePrompt, writer?: $protobuf.Writer): $protobuf.Writer;
+
+            /**
+             * Encodes the specified ReqExportTypePrompt message, length delimited. Does not implicitly {@link bead.msg.ReqExportTypePrompt.verify|verify} messages.
+             * @param message ReqExportTypePrompt message or plain object to encode
+             * @param [writer] Writer to encode to
+             * @returns Writer
+             */
+            public static encodeDelimited(message: bead.msg.IReqExportTypePrompt, writer?: $protobuf.Writer): $protobuf.Writer;
+
+            /**
+             * Decodes a ReqExportTypePrompt message from the specified reader or buffer.
+             * @param reader Reader or buffer to decode from
+             * @param [length] Message length if known beforehand
+             * @returns ReqExportTypePrompt
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): bead.msg.ReqExportTypePrompt;
+
+            /**
+             * Decodes a ReqExportTypePrompt message from the specified reader or buffer, length delimited.
+             * @param reader Reader or buffer to decode from
+             * @returns ReqExportTypePrompt
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): bead.msg.ReqExportTypePrompt;
+
+            /**
+             * Verifies a ReqExportTypePrompt message.
+             * @param message Plain object to verify
+             * @returns `null` if valid, otherwise the reason why it is not
+             */
+            public static verify(message: { [k: string]: any }): (string|null);
+
+            /**
+             * Creates a ReqExportTypePrompt message from a plain object. Also converts values to their respective internal types.
+             * @param object Plain object
+             * @returns ReqExportTypePrompt
+             */
+            public static fromObject(object: { [k: string]: any }): bead.msg.ReqExportTypePrompt;
+
+            /**
+             * Creates a plain object from a ReqExportTypePrompt message. Also converts values to other types if specified.
+             * @param message ReqExportTypePrompt
+             * @param [options] Conversion options
+             * @returns Plain object
+             */
+            public static toObject(message: bead.msg.ReqExportTypePrompt, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+            /**
+             * Converts this ReqExportTypePrompt to JSON.
+             * @returns JSON object
+             */
+            public toJSON(): { [k: string]: any };
+
+            /**
+             * Gets the default type url for ReqExportTypePrompt
+             * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+             * @returns The default type url
+             */
+            public static getTypeUrl(typeUrlPrefix?: string): string;
+        }
+
+        /** Properties of a ResExportTypePrompt. */
+        interface IResExportTypePrompt {
+
+            /** ResExportTypePrompt errorType */
+            errorType?: (bead.msg.ResExportTypePrompt.ErrorTypeT|null);
+        }
+
+        /** Represents a ResExportTypePrompt. */
+        class ResExportTypePrompt implements IResExportTypePrompt {
+
+            /**
+             * Constructs a new ResExportTypePrompt.
+             * @param [properties] Properties to set
+             */
+            constructor(properties?: bead.msg.IResExportTypePrompt);
+
+            /** ResExportTypePrompt errorType. */
+            public errorType: bead.msg.ResExportTypePrompt.ErrorTypeT;
+
+            /**
+             * Creates a new ResExportTypePrompt instance using the specified properties.
+             * @param [properties] Properties to set
+             * @returns ResExportTypePrompt instance
+             */
+            public static create(properties?: bead.msg.IResExportTypePrompt): bead.msg.ResExportTypePrompt;
+
+            /**
+             * Encodes the specified ResExportTypePrompt message. Does not implicitly {@link bead.msg.ResExportTypePrompt.verify|verify} messages.
+             * @param message ResExportTypePrompt message or plain object to encode
+             * @param [writer] Writer to encode to
+             * @returns Writer
+             */
+            public static encode(message: bead.msg.IResExportTypePrompt, writer?: $protobuf.Writer): $protobuf.Writer;
+
+            /**
+             * Encodes the specified ResExportTypePrompt message, length delimited. Does not implicitly {@link bead.msg.ResExportTypePrompt.verify|verify} messages.
+             * @param message ResExportTypePrompt message or plain object to encode
+             * @param [writer] Writer to encode to
+             * @returns Writer
+             */
+            public static encodeDelimited(message: bead.msg.IResExportTypePrompt, writer?: $protobuf.Writer): $protobuf.Writer;
+
+            /**
+             * Decodes a ResExportTypePrompt message from the specified reader or buffer.
+             * @param reader Reader or buffer to decode from
+             * @param [length] Message length if known beforehand
+             * @returns ResExportTypePrompt
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): bead.msg.ResExportTypePrompt;
+
+            /**
+             * Decodes a ResExportTypePrompt message from the specified reader or buffer, length delimited.
+             * @param reader Reader or buffer to decode from
+             * @returns ResExportTypePrompt
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): bead.msg.ResExportTypePrompt;
+
+            /**
+             * Verifies a ResExportTypePrompt message.
+             * @param message Plain object to verify
+             * @returns `null` if valid, otherwise the reason why it is not
+             */
+            public static verify(message: { [k: string]: any }): (string|null);
+
+            /**
+             * Creates a ResExportTypePrompt message from a plain object. Also converts values to their respective internal types.
+             * @param object Plain object
+             * @returns ResExportTypePrompt
+             */
+            public static fromObject(object: { [k: string]: any }): bead.msg.ResExportTypePrompt;
+
+            /**
+             * Creates a plain object from a ResExportTypePrompt message. Also converts values to other types if specified.
+             * @param message ResExportTypePrompt
+             * @param [options] Conversion options
+             * @returns Plain object
+             */
+            public static toObject(message: bead.msg.ResExportTypePrompt, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+            /**
+             * Converts this ResExportTypePrompt to JSON.
+             * @returns JSON object
+             */
+            public toJSON(): { [k: string]: any };
+
+            /**
+             * Gets the default type url for ResExportTypePrompt
+             * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+             * @returns The default type url
+             */
+            public static getTypeUrl(typeUrlPrefix?: string): string;
+        }
+
+        namespace ResExportTypePrompt {
 
             /** ErrorTypeT enum. */
             enum ErrorTypeT {

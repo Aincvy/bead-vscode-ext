@@ -41,6 +41,7 @@ $root.bead = (function() {
          * @property {number} FileDelete=7 FileDelete value
          * @property {number} ClearCache=8 ClearCache value
          * @property {number} ReParseFile=9 ReParseFile value
+         * @property {number} ExportTypePrompt=10 ExportTypePrompt value
          */
         msg.MessageType = (function() {
             var valuesById = {}, values = Object.create(valuesById);
@@ -54,6 +55,7 @@ $root.bead = (function() {
             values[valuesById[7] = "FileDelete"] = 7;
             values[valuesById[8] = "ClearCache"] = 8;
             values[valuesById[9] = "ReParseFile"] = 9;
+            values[valuesById[10] = "ExportTypePrompt"] = 10;
             return values;
         })();
 
@@ -232,6 +234,7 @@ $root.bead = (function() {
                     case 7:
                     case 8:
                     case 9:
+                    case 10:
                         break;
                     }
                 if (message.id != null && message.hasOwnProperty("id"))
@@ -301,6 +304,10 @@ $root.bead = (function() {
                 case "ReParseFile":
                 case 9:
                     message.type = 9;
+                    break;
+                case "ExportTypePrompt":
+                case 10:
+                    message.type = 10;
                     break;
                 }
                 if (object.id != null)
@@ -4417,6 +4424,474 @@ $root.bead = (function() {
             })();
 
             return ResReParseFile;
+        })();
+
+        msg.ReqExportTypePrompt = (function() {
+
+            /**
+             * Properties of a ReqExportTypePrompt.
+             * @memberof bead.msg
+             * @interface IReqExportTypePrompt
+             * @property {string|null} [filepath] ReqExportTypePrompt filepath
+             * @property {bead.msg.ILineAndColumn|null} [pos] ReqExportTypePrompt pos
+             */
+
+            /**
+             * Constructs a new ReqExportTypePrompt.
+             * @memberof bead.msg
+             * @classdesc Represents a ReqExportTypePrompt.
+             * @implements IReqExportTypePrompt
+             * @constructor
+             * @param {bead.msg.IReqExportTypePrompt=} [properties] Properties to set
+             */
+            function ReqExportTypePrompt(properties) {
+                if (properties)
+                    for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                        if (properties[keys[i]] != null)
+                            this[keys[i]] = properties[keys[i]];
+            }
+
+            /**
+             * ReqExportTypePrompt filepath.
+             * @member {string} filepath
+             * @memberof bead.msg.ReqExportTypePrompt
+             * @instance
+             */
+            ReqExportTypePrompt.prototype.filepath = "";
+
+            /**
+             * ReqExportTypePrompt pos.
+             * @member {bead.msg.ILineAndColumn|null|undefined} pos
+             * @memberof bead.msg.ReqExportTypePrompt
+             * @instance
+             */
+            ReqExportTypePrompt.prototype.pos = null;
+
+            /**
+             * Creates a new ReqExportTypePrompt instance using the specified properties.
+             * @function create
+             * @memberof bead.msg.ReqExportTypePrompt
+             * @static
+             * @param {bead.msg.IReqExportTypePrompt=} [properties] Properties to set
+             * @returns {bead.msg.ReqExportTypePrompt} ReqExportTypePrompt instance
+             */
+            ReqExportTypePrompt.create = function create(properties) {
+                return new ReqExportTypePrompt(properties);
+            };
+
+            /**
+             * Encodes the specified ReqExportTypePrompt message. Does not implicitly {@link bead.msg.ReqExportTypePrompt.verify|verify} messages.
+             * @function encode
+             * @memberof bead.msg.ReqExportTypePrompt
+             * @static
+             * @param {bead.msg.IReqExportTypePrompt} message ReqExportTypePrompt message or plain object to encode
+             * @param {$protobuf.Writer} [writer] Writer to encode to
+             * @returns {$protobuf.Writer} Writer
+             */
+            ReqExportTypePrompt.encode = function encode(message, writer) {
+                if (!writer)
+                    writer = $Writer.create();
+                if (message.filepath != null && Object.hasOwnProperty.call(message, "filepath"))
+                    writer.uint32(/* id 1, wireType 2 =*/10).string(message.filepath);
+                if (message.pos != null && Object.hasOwnProperty.call(message, "pos"))
+                    $root.bead.msg.LineAndColumn.encode(message.pos, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                return writer;
+            };
+
+            /**
+             * Encodes the specified ReqExportTypePrompt message, length delimited. Does not implicitly {@link bead.msg.ReqExportTypePrompt.verify|verify} messages.
+             * @function encodeDelimited
+             * @memberof bead.msg.ReqExportTypePrompt
+             * @static
+             * @param {bead.msg.IReqExportTypePrompt} message ReqExportTypePrompt message or plain object to encode
+             * @param {$protobuf.Writer} [writer] Writer to encode to
+             * @returns {$protobuf.Writer} Writer
+             */
+            ReqExportTypePrompt.encodeDelimited = function encodeDelimited(message, writer) {
+                return this.encode(message, writer).ldelim();
+            };
+
+            /**
+             * Decodes a ReqExportTypePrompt message from the specified reader or buffer.
+             * @function decode
+             * @memberof bead.msg.ReqExportTypePrompt
+             * @static
+             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+             * @param {number} [length] Message length if known beforehand
+             * @returns {bead.msg.ReqExportTypePrompt} ReqExportTypePrompt
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            ReqExportTypePrompt.decode = function decode(reader, length) {
+                if (!(reader instanceof $Reader))
+                    reader = $Reader.create(reader);
+                var end = length === undefined ? reader.len : reader.pos + length, message = new $root.bead.msg.ReqExportTypePrompt();
+                while (reader.pos < end) {
+                    var tag = reader.uint32();
+                    switch (tag >>> 3) {
+                    case 1: {
+                            message.filepath = reader.string();
+                            break;
+                        }
+                    case 2: {
+                            message.pos = $root.bead.msg.LineAndColumn.decode(reader, reader.uint32());
+                            break;
+                        }
+                    default:
+                        reader.skipType(tag & 7);
+                        break;
+                    }
+                }
+                return message;
+            };
+
+            /**
+             * Decodes a ReqExportTypePrompt message from the specified reader or buffer, length delimited.
+             * @function decodeDelimited
+             * @memberof bead.msg.ReqExportTypePrompt
+             * @static
+             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+             * @returns {bead.msg.ReqExportTypePrompt} ReqExportTypePrompt
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            ReqExportTypePrompt.decodeDelimited = function decodeDelimited(reader) {
+                if (!(reader instanceof $Reader))
+                    reader = new $Reader(reader);
+                return this.decode(reader, reader.uint32());
+            };
+
+            /**
+             * Verifies a ReqExportTypePrompt message.
+             * @function verify
+             * @memberof bead.msg.ReqExportTypePrompt
+             * @static
+             * @param {Object.<string,*>} message Plain object to verify
+             * @returns {string|null} `null` if valid, otherwise the reason why it is not
+             */
+            ReqExportTypePrompt.verify = function verify(message) {
+                if (typeof message !== "object" || message === null)
+                    return "object expected";
+                if (message.filepath != null && message.hasOwnProperty("filepath"))
+                    if (!$util.isString(message.filepath))
+                        return "filepath: string expected";
+                if (message.pos != null && message.hasOwnProperty("pos")) {
+                    var error = $root.bead.msg.LineAndColumn.verify(message.pos);
+                    if (error)
+                        return "pos." + error;
+                }
+                return null;
+            };
+
+            /**
+             * Creates a ReqExportTypePrompt message from a plain object. Also converts values to their respective internal types.
+             * @function fromObject
+             * @memberof bead.msg.ReqExportTypePrompt
+             * @static
+             * @param {Object.<string,*>} object Plain object
+             * @returns {bead.msg.ReqExportTypePrompt} ReqExportTypePrompt
+             */
+            ReqExportTypePrompt.fromObject = function fromObject(object) {
+                if (object instanceof $root.bead.msg.ReqExportTypePrompt)
+                    return object;
+                var message = new $root.bead.msg.ReqExportTypePrompt();
+                if (object.filepath != null)
+                    message.filepath = String(object.filepath);
+                if (object.pos != null) {
+                    if (typeof object.pos !== "object")
+                        throw TypeError(".bead.msg.ReqExportTypePrompt.pos: object expected");
+                    message.pos = $root.bead.msg.LineAndColumn.fromObject(object.pos);
+                }
+                return message;
+            };
+
+            /**
+             * Creates a plain object from a ReqExportTypePrompt message. Also converts values to other types if specified.
+             * @function toObject
+             * @memberof bead.msg.ReqExportTypePrompt
+             * @static
+             * @param {bead.msg.ReqExportTypePrompt} message ReqExportTypePrompt
+             * @param {$protobuf.IConversionOptions} [options] Conversion options
+             * @returns {Object.<string,*>} Plain object
+             */
+            ReqExportTypePrompt.toObject = function toObject(message, options) {
+                if (!options)
+                    options = {};
+                var object = {};
+                if (options.defaults) {
+                    object.filepath = "";
+                    object.pos = null;
+                }
+                if (message.filepath != null && message.hasOwnProperty("filepath"))
+                    object.filepath = message.filepath;
+                if (message.pos != null && message.hasOwnProperty("pos"))
+                    object.pos = $root.bead.msg.LineAndColumn.toObject(message.pos, options);
+                return object;
+            };
+
+            /**
+             * Converts this ReqExportTypePrompt to JSON.
+             * @function toJSON
+             * @memberof bead.msg.ReqExportTypePrompt
+             * @instance
+             * @returns {Object.<string,*>} JSON object
+             */
+            ReqExportTypePrompt.prototype.toJSON = function toJSON() {
+                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+            };
+
+            /**
+             * Gets the default type url for ReqExportTypePrompt
+             * @function getTypeUrl
+             * @memberof bead.msg.ReqExportTypePrompt
+             * @static
+             * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+             * @returns {string} The default type url
+             */
+            ReqExportTypePrompt.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                if (typeUrlPrefix === undefined) {
+                    typeUrlPrefix = "type.googleapis.com";
+                }
+                return typeUrlPrefix + "/bead.msg.ReqExportTypePrompt";
+            };
+
+            return ReqExportTypePrompt;
+        })();
+
+        msg.ResExportTypePrompt = (function() {
+
+            /**
+             * Properties of a ResExportTypePrompt.
+             * @memberof bead.msg
+             * @interface IResExportTypePrompt
+             * @property {bead.msg.ResExportTypePrompt.ErrorTypeT|null} [errorType] ResExportTypePrompt errorType
+             */
+
+            /**
+             * Constructs a new ResExportTypePrompt.
+             * @memberof bead.msg
+             * @classdesc Represents a ResExportTypePrompt.
+             * @implements IResExportTypePrompt
+             * @constructor
+             * @param {bead.msg.IResExportTypePrompt=} [properties] Properties to set
+             */
+            function ResExportTypePrompt(properties) {
+                if (properties)
+                    for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                        if (properties[keys[i]] != null)
+                            this[keys[i]] = properties[keys[i]];
+            }
+
+            /**
+             * ResExportTypePrompt errorType.
+             * @member {bead.msg.ResExportTypePrompt.ErrorTypeT} errorType
+             * @memberof bead.msg.ResExportTypePrompt
+             * @instance
+             */
+            ResExportTypePrompt.prototype.errorType = 0;
+
+            /**
+             * Creates a new ResExportTypePrompt instance using the specified properties.
+             * @function create
+             * @memberof bead.msg.ResExportTypePrompt
+             * @static
+             * @param {bead.msg.IResExportTypePrompt=} [properties] Properties to set
+             * @returns {bead.msg.ResExportTypePrompt} ResExportTypePrompt instance
+             */
+            ResExportTypePrompt.create = function create(properties) {
+                return new ResExportTypePrompt(properties);
+            };
+
+            /**
+             * Encodes the specified ResExportTypePrompt message. Does not implicitly {@link bead.msg.ResExportTypePrompt.verify|verify} messages.
+             * @function encode
+             * @memberof bead.msg.ResExportTypePrompt
+             * @static
+             * @param {bead.msg.IResExportTypePrompt} message ResExportTypePrompt message or plain object to encode
+             * @param {$protobuf.Writer} [writer] Writer to encode to
+             * @returns {$protobuf.Writer} Writer
+             */
+            ResExportTypePrompt.encode = function encode(message, writer) {
+                if (!writer)
+                    writer = $Writer.create();
+                if (message.errorType != null && Object.hasOwnProperty.call(message, "errorType"))
+                    writer.uint32(/* id 1, wireType 0 =*/8).int32(message.errorType);
+                return writer;
+            };
+
+            /**
+             * Encodes the specified ResExportTypePrompt message, length delimited. Does not implicitly {@link bead.msg.ResExportTypePrompt.verify|verify} messages.
+             * @function encodeDelimited
+             * @memberof bead.msg.ResExportTypePrompt
+             * @static
+             * @param {bead.msg.IResExportTypePrompt} message ResExportTypePrompt message or plain object to encode
+             * @param {$protobuf.Writer} [writer] Writer to encode to
+             * @returns {$protobuf.Writer} Writer
+             */
+            ResExportTypePrompt.encodeDelimited = function encodeDelimited(message, writer) {
+                return this.encode(message, writer).ldelim();
+            };
+
+            /**
+             * Decodes a ResExportTypePrompt message from the specified reader or buffer.
+             * @function decode
+             * @memberof bead.msg.ResExportTypePrompt
+             * @static
+             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+             * @param {number} [length] Message length if known beforehand
+             * @returns {bead.msg.ResExportTypePrompt} ResExportTypePrompt
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            ResExportTypePrompt.decode = function decode(reader, length) {
+                if (!(reader instanceof $Reader))
+                    reader = $Reader.create(reader);
+                var end = length === undefined ? reader.len : reader.pos + length, message = new $root.bead.msg.ResExportTypePrompt();
+                while (reader.pos < end) {
+                    var tag = reader.uint32();
+                    switch (tag >>> 3) {
+                    case 1: {
+                            message.errorType = reader.int32();
+                            break;
+                        }
+                    default:
+                        reader.skipType(tag & 7);
+                        break;
+                    }
+                }
+                return message;
+            };
+
+            /**
+             * Decodes a ResExportTypePrompt message from the specified reader or buffer, length delimited.
+             * @function decodeDelimited
+             * @memberof bead.msg.ResExportTypePrompt
+             * @static
+             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+             * @returns {bead.msg.ResExportTypePrompt} ResExportTypePrompt
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            ResExportTypePrompt.decodeDelimited = function decodeDelimited(reader) {
+                if (!(reader instanceof $Reader))
+                    reader = new $Reader(reader);
+                return this.decode(reader, reader.uint32());
+            };
+
+            /**
+             * Verifies a ResExportTypePrompt message.
+             * @function verify
+             * @memberof bead.msg.ResExportTypePrompt
+             * @static
+             * @param {Object.<string,*>} message Plain object to verify
+             * @returns {string|null} `null` if valid, otherwise the reason why it is not
+             */
+            ResExportTypePrompt.verify = function verify(message) {
+                if (typeof message !== "object" || message === null)
+                    return "object expected";
+                if (message.errorType != null && message.hasOwnProperty("errorType"))
+                    switch (message.errorType) {
+                    default:
+                        return "errorType: enum value expected";
+                    case 0:
+                    case 1:
+                        break;
+                    }
+                return null;
+            };
+
+            /**
+             * Creates a ResExportTypePrompt message from a plain object. Also converts values to their respective internal types.
+             * @function fromObject
+             * @memberof bead.msg.ResExportTypePrompt
+             * @static
+             * @param {Object.<string,*>} object Plain object
+             * @returns {bead.msg.ResExportTypePrompt} ResExportTypePrompt
+             */
+            ResExportTypePrompt.fromObject = function fromObject(object) {
+                if (object instanceof $root.bead.msg.ResExportTypePrompt)
+                    return object;
+                var message = new $root.bead.msg.ResExportTypePrompt();
+                switch (object.errorType) {
+                default:
+                    if (typeof object.errorType === "number") {
+                        message.errorType = object.errorType;
+                        break;
+                    }
+                    break;
+                case "Success":
+                case 0:
+                    message.errorType = 0;
+                    break;
+                case "Fail":
+                case 1:
+                    message.errorType = 1;
+                    break;
+                }
+                return message;
+            };
+
+            /**
+             * Creates a plain object from a ResExportTypePrompt message. Also converts values to other types if specified.
+             * @function toObject
+             * @memberof bead.msg.ResExportTypePrompt
+             * @static
+             * @param {bead.msg.ResExportTypePrompt} message ResExportTypePrompt
+             * @param {$protobuf.IConversionOptions} [options] Conversion options
+             * @returns {Object.<string,*>} Plain object
+             */
+            ResExportTypePrompt.toObject = function toObject(message, options) {
+                if (!options)
+                    options = {};
+                var object = {};
+                if (options.defaults)
+                    object.errorType = options.enums === String ? "Success" : 0;
+                if (message.errorType != null && message.hasOwnProperty("errorType"))
+                    object.errorType = options.enums === String ? $root.bead.msg.ResExportTypePrompt.ErrorTypeT[message.errorType] === undefined ? message.errorType : $root.bead.msg.ResExportTypePrompt.ErrorTypeT[message.errorType] : message.errorType;
+                return object;
+            };
+
+            /**
+             * Converts this ResExportTypePrompt to JSON.
+             * @function toJSON
+             * @memberof bead.msg.ResExportTypePrompt
+             * @instance
+             * @returns {Object.<string,*>} JSON object
+             */
+            ResExportTypePrompt.prototype.toJSON = function toJSON() {
+                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+            };
+
+            /**
+             * Gets the default type url for ResExportTypePrompt
+             * @function getTypeUrl
+             * @memberof bead.msg.ResExportTypePrompt
+             * @static
+             * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+             * @returns {string} The default type url
+             */
+            ResExportTypePrompt.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                if (typeUrlPrefix === undefined) {
+                    typeUrlPrefix = "type.googleapis.com";
+                }
+                return typeUrlPrefix + "/bead.msg.ResExportTypePrompt";
+            };
+
+            /**
+             * ErrorTypeT enum.
+             * @name bead.msg.ResExportTypePrompt.ErrorTypeT
+             * @enum {number}
+             * @property {number} Success=0 Success value
+             * @property {number} Fail=1 Fail value
+             */
+            ResExportTypePrompt.ErrorTypeT = (function() {
+                var valuesById = {}, values = Object.create(valuesById);
+                values[valuesById[0] = "Success"] = 0;
+                values[valuesById[1] = "Fail"] = 1;
+                return values;
+            })();
+
+            return ResExportTypePrompt;
         })();
 
         return msg;
