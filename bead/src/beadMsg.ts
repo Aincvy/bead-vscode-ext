@@ -94,6 +94,10 @@ export class BeadMessageManager extends EventEmitter {
     }
 
     public async sendFileEdit(filepath: string, range: beadMessage.bead.msg.IFileRange, newText: string): Promise<number> {
+        if (filepath.startsWith("git\\scm0")) {
+            console.log("Skipping git edit");
+            return Promise.resolve(0);
+        }
         const message = beadMessage.bead.msg.ReqFileEdit.create({ filepath, range, newText });
         const encodedMessage = beadMessage.bead.msg.ReqFileEdit.encode(message).finish();
         return await this.sendMessage(beadMessage.bead.msg.MessageType.FileEdit, encodedMessage);

@@ -336,7 +336,7 @@ function registerCodeActions(context: vscode.ExtensionContext) {
                 token: vscode.CancellationToken
             ): vscode.CodeAction[] {
                 const action = new vscode.CodeAction(
-                    'exportTypePrompt',
+                    'Bead: Export type related prompt',
                     vscode.CodeActionKind.Empty
                 );
 
