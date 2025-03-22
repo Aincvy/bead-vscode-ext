@@ -1,12 +1,15 @@
 {
     "name": "bead-auto-completion",
     "displayName": "bead",
-    "description": "code auto completion via openai/fauxpilot",
+    "description": "code auto completion tool for openai/fauxpilot server",
     "version": "0.0.1",
+    "publisher": "Aincvy",
+    "repository": "https://github.com/Aincvy/bead-vscode-ext",
     "author": {
         "name": "Aincvy",
         "email": "aincvy@gmail.com"
     },
+    "icon": "icon.png",
     "engines": {
         "vscode": "^1.92.0"
     },
