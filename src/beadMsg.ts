@@ -3,6 +3,9 @@ import * as vscode from 'vscode';
 
 import * as beadMessage from './bead_message';
 import { NetworkManager } from './network';
+import messageLockManager from './messageLock';
+
+const LOCK_KEY_TEXT_COMPLETION = "textCompletion";
 
 export class BeadMessageManager extends EventEmitter {
     private networkManager: NetworkManager | null = null;
@@ -33,6 +36,7 @@ export class BeadMessageManager extends EventEmitter {
     private handleMessage(message: beadMessage.bead.msg.IBeadSingleMessage) {
         switch (message.type) {
             case beadMessage.bead.msg.MessageType.TextCompletion:
+                messageLockManager.clearLock(LOCK_KEY_TEXT_COMPLETION);
                 this.emit('onTextCompletion', message.id, beadMessage.bead.msg.ResTextCompletion.decode(message.msg!));
                 break;
             case beadMessage.bead.msg.MessageType.FileEdit:
@@ -88,8 +92,15 @@ export class BeadMessageManager extends EventEmitter {
     }
 
     public async sendTextCompletion(filepath: string, line: number, column: number): Promise<number> {
+        if (messageLockManager.hasLock(LOCK_KEY_TEXT_COMPLETION)) {
+            return Promise.reject('Text completion already in progress');
+        }
+
         const message = beadMessage.bead.msg.ReqTextCompletion.create({ filepath, line, column });
+        message.sendTime = Date.now();
         const encodedMessage = beadMessage.bead.msg.ReqTextCompletion.encode(message).finish();
+
+        messageLockManager.setLock(LOCK_KEY_TEXT_COMPLETION);
         return await this.sendMessage(beadMessage.bead.msg.MessageType.TextCompletion, encodedMessage);
     }
 

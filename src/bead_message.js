@@ -391,6 +391,7 @@ $root.bead = (function() {
              * @property {string|null} [filepath] ReqTextCompletion filepath
              * @property {number|null} [line] ReqTextCompletion line
              * @property {number|null} [column] ReqTextCompletion column
+             * @property {number|Long|null} [sendTime] ReqTextCompletion sendTime
              */
 
             /**
@@ -433,6 +434,14 @@ $root.bead = (function() {
             ReqTextCompletion.prototype.column = 0;
 
             /**
+             * ReqTextCompletion sendTime.
+             * @member {number|Long} sendTime
+             * @memberof bead.msg.ReqTextCompletion
+             * @instance
+             */
+            ReqTextCompletion.prototype.sendTime = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+            /**
              * Creates a new ReqTextCompletion instance using the specified properties.
              * @function create
              * @memberof bead.msg.ReqTextCompletion
@@ -462,6 +471,8 @@ $root.bead = (function() {
                     writer.uint32(/* id 2, wireType 0 =*/16).int32(message.line);
                 if (message.column != null && Object.hasOwnProperty.call(message, "column"))
                     writer.uint32(/* id 3, wireType 0 =*/24).int32(message.column);
+                if (message.sendTime != null && Object.hasOwnProperty.call(message, "sendTime"))
+                    writer.uint32(/* id 4, wireType 0 =*/32).int64(message.sendTime);
                 return writer;
             };
 
@@ -508,6 +519,10 @@ $root.bead = (function() {
                             message.column = reader.int32();
                             break;
                         }
+                    case 4: {
+                            message.sendTime = reader.int64();
+                            break;
+                        }
                     default:
                         reader.skipType(tag & 7);
                         break;
@@ -552,6 +567,9 @@ $root.bead = (function() {
                 if (message.column != null && message.hasOwnProperty("column"))
                     if (!$util.isInteger(message.column))
                         return "column: integer expected";
+                if (message.sendTime != null && message.hasOwnProperty("sendTime"))
+                    if (!$util.isInteger(message.sendTime) && !(message.sendTime && $util.isInteger(message.sendTime.low) && $util.isInteger(message.sendTime.high)))
+                        return "sendTime: integer|Long expected";
                 return null;
             };
 
@@ -573,6 +591,15 @@ $root.bead = (function() {
                     message.line = object.line | 0;
                 if (object.column != null)
                     message.column = object.column | 0;
+                if (object.sendTime != null)
+                    if ($util.Long)
+                        (message.sendTime = $util.Long.fromValue(object.sendTime)).unsigned = false;
+                    else if (typeof object.sendTime === "string")
+                        message.sendTime = parseInt(object.sendTime, 10);
+                    else if (typeof object.sendTime === "number")
+                        message.sendTime = object.sendTime;
+                    else if (typeof object.sendTime === "object")
+                        message.sendTime = new $util.LongBits(object.sendTime.low >>> 0, object.sendTime.high >>> 0).toNumber();
                 return message;
             };
 
@@ -593,6 +620,11 @@ $root.bead = (function() {
                     object.filepath = "";
                     object.line = 0;
                     object.column = 0;
+                    if ($util.Long) {
+                        var long = new $util.Long(0, 0, false);
+                        object.sendTime = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                    } else
+                        object.sendTime = options.longs === String ? "0" : 0;
                 }
                 if (message.filepath != null && message.hasOwnProperty("filepath"))
                     object.filepath = message.filepath;
@@ -600,6 +632,11 @@ $root.bead = (function() {
                     object.line = message.line;
                 if (message.column != null && message.hasOwnProperty("column"))
                     object.column = message.column;
+                if (message.sendTime != null && message.hasOwnProperty("sendTime"))
+                    if (typeof message.sendTime === "number")
+                        object.sendTime = options.longs === String ? String(message.sendTime) : message.sendTime;
+                    else
+                        object.sendTime = options.longs === String ? $util.Long.prototype.toString.call(message.sendTime) : options.longs === Number ? new $util.LongBits(message.sendTime.low >>> 0, message.sendTime.high >>> 0).toNumber() : message.sendTime;
                 return object;
             };
 
@@ -784,6 +821,7 @@ $root.bead = (function() {
                         return "errorType: enum value expected";
                     case 0:
                     case 1:
+                    case 2:
                         break;
                     }
                 if (message.content != null && message.hasOwnProperty("content"))
@@ -818,6 +856,10 @@ $root.bead = (function() {
                 case "Fail":
                 case 1:
                     message.errorType = 1;
+                    break;
+                case "TimeOut":
+                case 2:
+                    message.errorType = 2;
                     break;
                 }
                 if (object.content != null)
@@ -881,11 +923,13 @@ $root.bead = (function() {
              * @enum {number}
              * @property {number} Success=0 Success value
              * @property {number} Fail=1 Fail value
+             * @property {number} TimeOut=2 TimeOut value
              */
             ResTextCompletion.ErrorTypeT = (function() {
                 var valuesById = {}, values = Object.create(valuesById);
                 values[valuesById[0] = "Success"] = 0;
                 values[valuesById[1] = "Fail"] = 1;
+                values[valuesById[2] = "TimeOut"] = 2;
                 return values;
             })();
 

@@ -141,6 +141,9 @@ export namespace bead {
 
             /** ReqTextCompletion column */
             column?: (number|null);
+
+            /** ReqTextCompletion sendTime */
+            sendTime?: (number|Long|null);
         }
 
         /** Represents a ReqTextCompletion. */
@@ -160,6 +163,9 @@ export namespace bead {
 
             /** ReqTextCompletion column. */
             public column: number;
+
+            /** ReqTextCompletion sendTime. */
+            public sendTime: (number|Long);
 
             /**
              * Creates a new ReqTextCompletion instance using the specified properties.
@@ -347,7 +353,8 @@ export namespace bead {
             /** ErrorTypeT enum. */
             enum ErrorTypeT {
                 Success = 0,
-                Fail = 1
+                Fail = 1,
+                TimeOut = 2
             }
         }
 
