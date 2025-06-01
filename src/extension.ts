@@ -5,8 +5,9 @@ import { NetworkManager } from './network';
 import { BeadMessageManager } from './beadMsg';
 import * as beadMessage from './bead_message';
 import * as path from 'path';
-import { ConfigManager } from './config';
+import { ConfigManager, BeadConfig } from './config';
 import { sleep } from './utils';
+import { ServerManager } from './serverManager';
 
 const runtimeEntity = {
     project: {
@@ -34,6 +35,7 @@ beadMsgManager.setNetworkManager(networkManager);
 
 const globalMessageMap = new Map<number, beadMessage.bead.msg.IResTextCompletion>();
 
+const serverManager = new ServerManager();
 
 function createCompletionItems(res: beadMessage.bead.msg.IResTextCompletion, pos: vscode.Position): vscode.ProviderResult<vscode.InlineCompletionItem[]> {
     if (res.errorType === beadMessage.bead.msg.ResTextCompletion.ErrorTypeT.Success && (res.content?.length ?? 0) > 0) {
@@ -77,6 +79,21 @@ ConfigManager.getInstance().on('prompt-config-changed', (mgr: ConfigManager) => 
     const config = mgr.getConfig();
     beadMsgManager.sendChangeConfig(config.prompt.topic, config.prompt.functionReferenceCount);
 });
+
+/**
+ * 开启 bead-serve 进程
+ * @param config 
+ */
+async function startServerProcess(config: BeadConfig) {
+    const success = await serverManager.startServer(config.beadServerPath, config.configFilePath);
+    if (success) {
+        const port = serverManager.getDynamicPort();
+        vscode.window.showInformationMessage(`Bead服务器启动成功，端口: ${port}`);
+
+    } else {
+        vscode.window.showWarningMessage('Bead服务器启动失败，请检查配置');
+    }
+}
 
 export function registerCommands(context: vscode.ExtensionContext) {
     const disposable = vscode.commands.registerCommand('bead.connect', async () => {
@@ -145,6 +162,79 @@ export function registerCommands(context: vscode.ExtensionContext) {
     });
     context.subscriptions.push(exportTypePromptCommand);
 
+    const configManager = ConfigManager.getInstance();
+    // 重启服务器命令
+    const restartServerCommand = vscode.commands.registerCommand('bead.restartServer', async () => {
+        // try {
+        //     const success = await configManager.restartBeadServer();
+        //     if (success) {
+        //         vscode.window.showInformationMessage('Bead服务器重启成功');
+        //     } else {
+        //         vscode.window.showWarningMessage('Bead服务器重启失败，请检查配置');
+        //     }
+        // } catch (error) {
+        //     vscode.window.showErrorMessage(`重启Bead服务器时发生错误: ${error}`);
+        // }
+    });
+
+    // 启动服务器命令
+    const startServerCommand = vscode.commands.registerCommand('bead.startServer', async () => {
+        try {
+            if (serverManager.isRunning()) {
+                vscode.window.showInformationMessage('Bead服务器已经在运行中');
+                return;
+            }
+
+            const config = configManager.getConfig();
+            await startServerProcess(config);
+
+        } catch (error) {
+            vscode.window.showErrorMessage(`启动Bead服务器时发生错误: ${error}`);
+        }
+    });
+
+    // 停止服务器命令
+    const stopServerCommand = vscode.commands.registerCommand('bead.stopServer', async () => {
+        try {
+            if (!serverManager.isRunning()) {
+                vscode.window.showInformationMessage('Bead服务器未运行');
+                return;
+            }
+
+            await serverManager.stopServer();
+            vscode.window.showInformationMessage('Bead服务器已停止');
+        } catch (error) {
+            vscode.window.showErrorMessage(`停止Bead服务器时发生错误: ${error}`);
+        }
+    });
+
+    // 显示服务器状态命令
+    const showServerStatusCommand = vscode.commands.registerCommand('bead.showServerStatus', () => {
+        const status = serverManager.getServerInfo();
+        const config = configManager.getConfig();
+
+        let message = `服务器状态: ${status.running ? '运行中' : '已停止'}`;
+
+        if (status.running) {
+            message += `\n端口: ${status.port}`;
+            message += `\n进程ID: ${status.pid}`;
+            message += `\n启动时间: ${status.startTime}`;
+        }
+
+        message += `\n配置路径: ${config.beadServerPath || '未配置'}`;
+        // message += `\n自动启动: ${config.autoStartServer ? '是' : '否'}`;
+
+        vscode.window.showInformationMessage(message, { modal: true });
+    });
+
+    // 注册所有命令到订阅列表
+    context.subscriptions.push(
+        restartServerCommand,
+        startServerCommand,
+        stopServerCommand,
+        showServerStatusCommand
+    );
+
 }
 
 
@@ -154,8 +244,6 @@ export function activate(context: vscode.ExtensionContext) {
 	console.log('Congratulations, your extension "bead" is now active!');
 
     const configManager = ConfigManager.getInstance();
-        
-    networkManager.connect();
 
     const onDidChangeTextDocumentDisposable = vscode.workspace.onDidChangeTextDocument(event => {
         const document = event.document;
@@ -295,6 +383,28 @@ export function activate(context: vscode.ExtensionContext) {
     registerCommands(context);
 
     registerCodeActions(context);    
+
+    serverManager.on('serverStarted', serverInfo => {
+        networkManager.disconnect();
+        networkManager.connect(serverInfo.port);
+    });
+
+    serverManager.on('serverStopped', () => {
+        networkManager.disconnect();
+    });
+
+    if (configManager.isConfigInvalid()) {
+        // 配置无效
+        return;
+    }
+
+    const config = configManager.getConfig();
+    if (config.serverType == 'Manual') {
+        networkManager.connect();
+    } else if(config.serverType == 'Auto'){
+        // 自动启动
+        startServerProcess(config);
+    }
 }
 
 

@@ -13,7 +13,7 @@ export class NetworkManager extends EventEmitter {
         // this.connect();
     }
 
-    public connect() {
+    public connect(port?: number) {
         if (this.isConnected) {
             console.log('Already connected');
             return;
@@ -22,7 +22,7 @@ export class NetworkManager extends EventEmitter {
         const config = ConfigManager.getInstance().getConfig();
         this.socket = new net.Socket();
 
-        this.socket.connect(config.server.port, config.server.host, () => {
+        this.socket.connect(port ?? config.server.port, config.server.host, () => {
             console.log('Connected to server');
             this.isConnected = true;
             this.emit('connected');

@@ -24,31 +24,58 @@
         "commands": [
             {
                 "command": "bead.connect",
-                "title": "Bead: connect to server"
+                "title": "Connect to server",
+                "category": "Bead"
             },
             {
                 "command": "bead.setTopicPrompt",
-                "title": "Bead: Set Topic Prompt"
+                "title": "Set Topic Prompt",
+                "category": "Bead"
             },
             {
                 "command": "bead.increaseFunctionReferenceCount",
-                "title": "Bead: Increase Function Reference Count"
+                "title": "Increase Function Reference Count",
+                "category": "Bead"
             },
             {
                 "command": "bead.decreaseFunctionReferenceCount",
-                "title": "Bead: Decrease Function Reference Count"
+                "title": "Decrease Function Reference Count",
+                "category": "Bead"
             },
             {
                 "command": "bead.clearCache",
-                "title": "Bead: Clear Cache"
+                "title": "Clear Cache",
+                "category": "Bead"
             },
             {
                 "command": "bead.reParseFile",
-                "title": "Bead: Re-Parse Current File"
+                "title": "Re-Parse Current File",
+                "category": "Bead"
             }, 
             {
                 "command": "bead.exportTypePrompt",
-                "title": "Bead: Export type related prompt"
+                "title": "Export type related prompt",
+                "category": "Bead"
+            },
+            {
+                "command": "bead.restartServer",
+                "title": "Restart bead-server",
+                "category": "Bead"
+            },
+            {
+                "command": "bead.startServer",
+                "title": "Start bead-server",
+                "category": "Bead"
+            },
+            {
+                "command": "bead.stopServer",
+                "title": "Stop bead-server",
+                "category": "Bead"
+            },
+            {
+                "command": "bead.showServerStatus",
+                "title": "Show bead-server status",
+                "category": "Bead"
             }
         ],
         "configuration": {
@@ -58,7 +85,8 @@
                     "type": "string",
                     "enum": [
                         "None",
-                        "Manual"
+                        "Manual",
+                        "Auto"
                     ],
                     "default": "None",
                     "description": "Set the server type for Bead"
@@ -71,6 +99,8 @@
                 "bead.server.port": {
                     "type": "number",
                     "default": 31551,
+                    "minimum": 1024,
+                    "maximum": 65535,
                     "description": "Set the server port for Bead"
                 },
                 "bead.autoTrigger": {
@@ -87,6 +117,15 @@
                     "type": "number",
                     "default": 1,
                     "description": "Function reference count for Bead"
+                },
+                "bead.beadServerPath": {
+                    "type": "string",
+                    "default": "",
+                    "description": "bead-server program's located folder."
+                },
+                "bead.configFilePath": {
+                    "type": "string",
+                    "description": "overwrite the config file options"
                 }
             }
         }
