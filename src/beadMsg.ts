@@ -91,12 +91,12 @@ export class BeadMessageManager extends EventEmitter {
         return id;
     }
 
-    public async sendTextCompletion(filepath: string, line: number, column: number): Promise<number> {
+    public async sendTextCompletion(filepath: string, line: number, column: number, documentText: string): Promise<number> {
         if (messageLockManager.hasLock(LOCK_KEY_TEXT_COMPLETION)) {
             return Promise.reject('Text completion already in progress');
         }
 
-        const message = beadMessage.bead.msg.ReqTextCompletion.create({ filepath, line, column });
+        const message = beadMessage.bead.msg.ReqTextCompletion.create({ filepath, line, column, documentText });
         message.sendTime = Date.now();
         const encodedMessage = beadMessage.bead.msg.ReqTextCompletion.encode(message).finish();
 

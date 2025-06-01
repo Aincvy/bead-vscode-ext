@@ -81,7 +81,6 @@ export class BeadLogger {
             const timestamp = new Date().toLocaleTimeString();
             const message = this.formatArgs(...args);
             this.outputChannel.appendLine(`[${timestamp}] [ERROR] ${message}`);
-            this.show(); // 错误时自动显示
         }
     }
 
@@ -92,16 +91,6 @@ export class BeadLogger {
         if (process.env.NODE_ENV === 'development') {
             const message = this.formatArgs(...args);
             this.log(`[DEBUG] ${message}`);
-        }
-    }
-
-
-    /**
-     * 显示 Output 面板
-     */
-    public show(preserveFocus: boolean = false): void {
-        if (this.outputChannel) {
-            this.outputChannel.show(preserveFocus);
         }
     }
 

@@ -392,6 +392,7 @@ $root.bead = (function() {
              * @property {number|null} [line] ReqTextCompletion line
              * @property {number|null} [column] ReqTextCompletion column
              * @property {number|Long|null} [sendTime] ReqTextCompletion sendTime
+             * @property {string|null} [documentText] ReqTextCompletion documentText
              */
 
             /**
@@ -442,6 +443,14 @@ $root.bead = (function() {
             ReqTextCompletion.prototype.sendTime = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
 
             /**
+             * ReqTextCompletion documentText.
+             * @member {string} documentText
+             * @memberof bead.msg.ReqTextCompletion
+             * @instance
+             */
+            ReqTextCompletion.prototype.documentText = "";
+
+            /**
              * Creates a new ReqTextCompletion instance using the specified properties.
              * @function create
              * @memberof bead.msg.ReqTextCompletion
@@ -473,6 +482,8 @@ $root.bead = (function() {
                     writer.uint32(/* id 3, wireType 0 =*/24).int32(message.column);
                 if (message.sendTime != null && Object.hasOwnProperty.call(message, "sendTime"))
                     writer.uint32(/* id 4, wireType 0 =*/32).int64(message.sendTime);
+                if (message.documentText != null && Object.hasOwnProperty.call(message, "documentText"))
+                    writer.uint32(/* id 5, wireType 2 =*/42).string(message.documentText);
                 return writer;
             };
 
@@ -523,6 +534,10 @@ $root.bead = (function() {
                             message.sendTime = reader.int64();
                             break;
                         }
+                    case 5: {
+                            message.documentText = reader.string();
+                            break;
+                        }
                     default:
                         reader.skipType(tag & 7);
                         break;
@@ -570,6 +585,9 @@ $root.bead = (function() {
                 if (message.sendTime != null && message.hasOwnProperty("sendTime"))
                     if (!$util.isInteger(message.sendTime) && !(message.sendTime && $util.isInteger(message.sendTime.low) && $util.isInteger(message.sendTime.high)))
                         return "sendTime: integer|Long expected";
+                if (message.documentText != null && message.hasOwnProperty("documentText"))
+                    if (!$util.isString(message.documentText))
+                        return "documentText: string expected";
                 return null;
             };
 
@@ -600,6 +618,8 @@ $root.bead = (function() {
                         message.sendTime = object.sendTime;
                     else if (typeof object.sendTime === "object")
                         message.sendTime = new $util.LongBits(object.sendTime.low >>> 0, object.sendTime.high >>> 0).toNumber();
+                if (object.documentText != null)
+                    message.documentText = String(object.documentText);
                 return message;
             };
 
@@ -625,6 +645,7 @@ $root.bead = (function() {
                         object.sendTime = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
                     } else
                         object.sendTime = options.longs === String ? "0" : 0;
+                    object.documentText = "";
                 }
                 if (message.filepath != null && message.hasOwnProperty("filepath"))
                     object.filepath = message.filepath;
@@ -637,6 +658,8 @@ $root.bead = (function() {
                         object.sendTime = options.longs === String ? String(message.sendTime) : message.sendTime;
                     else
                         object.sendTime = options.longs === String ? $util.Long.prototype.toString.call(message.sendTime) : options.longs === Number ? new $util.LongBits(message.sendTime.low >>> 0, message.sendTime.high >>> 0).toNumber() : message.sendTime;
+                if (message.documentText != null && message.hasOwnProperty("documentText"))
+                    object.documentText = message.documentText;
                 return object;
             };
 

@@ -300,10 +300,11 @@ export function activate(context: vscode.ExtensionContext) {
 
     const provider = vscode.languages.registerInlineCompletionItemProvider(
         [
-            { scheme: 'file', language: 'c' },
-            { scheme: 'file', language: 'cpp' },
-            { scheme: 'file', pattern: '**/*.h' },
-            { scheme: 'file', language: 'java' },
+            // { scheme: 'file', language: 'c' },
+            // { scheme: 'file', language: 'cpp' },
+            // { scheme: 'file', pattern: '**/*.h' },
+            // { scheme: 'file', language: 'java' },
+            {pattern: "**"}
         ],
         {
             async provideInlineCompletionItems(document: vscode.TextDocument, position: vscode.Position, context: vscode.InlineCompletionContext, cancelToken: vscode.CancellationToken) {
@@ -317,7 +318,7 @@ export function activate(context: vscode.ExtensionContext) {
 
                 logger.info("provideInlineCompletionItems at line:", line);
                 try {
-                    const messageId = await beadMsgManager.sendTextCompletion(filepath, line, column);
+                    const messageId = await beadMsgManager.sendTextCompletion(filepath, line, column, document.getText());
                     logger.info(`Sent completion request, messageId: ${messageId}`);
 
                     let i = 0;

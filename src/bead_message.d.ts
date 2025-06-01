@@ -144,6 +144,9 @@ export namespace bead {
 
             /** ReqTextCompletion sendTime */
             sendTime?: (number|Long|null);
+
+            /** ReqTextCompletion documentText */
+            documentText?: (string|null);
         }
 
         /** Represents a ReqTextCompletion. */
@@ -166,6 +169,9 @@ export namespace bead {
 
             /** ReqTextCompletion sendTime. */
             public sendTime: (number|Long);
+
+            /** ReqTextCompletion documentText. */
+            public documentText: string;
 
             /**
              * Creates a new ReqTextCompletion instance using the specified properties.
