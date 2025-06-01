@@ -6,15 +6,19 @@ Two main features:
 
 The server part is not open source. You can download it from [release](https://github.com/Aincvy/bead-vscode-ext/releases) page.
 
-[vscode market](https://marketplace.visualstudio.com/items?itemName=Aincvy.bead-auto-completion) 
+Install vscode ext from [vscode market](https://marketplace.visualstudio.com/items?itemName=Aincvy.bead-auto-completion).
 
 
 ## bead-server
 
-start command: `.\bead-server.exe --config_file .\bead-server.config.json`
+Download from https://github.com/Aincvy/bead-vscode-ext/releases.
+
+- Manually start: run command: `.\bead-server.exe --config_file .\bead-server.config.json`
+- Auto start (Recommend):  set bead-server folder in vscode option: `"bead.beadServerPath": "FOLDER_PATH", "bead.serverType": "Auto"` . 
 
 ### config options
 
+The config file is `bead-server.config.json`.
 - openai:  which model do you want to use? (use model name)
 - models:  model name and model info
   - promptMaxLength:  max characters the client will send.
