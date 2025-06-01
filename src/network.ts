@@ -1,12 +1,14 @@
 import * as net from 'net';
 import { EventEmitter } from 'events';
 import { ConfigManager } from './config';
+import { BeadLogger } from './utils';
 
 export class NetworkManager extends EventEmitter {
     private socket: net.Socket | null = null;
     private readBuffer: Buffer = Buffer.alloc(0);
     // private writeBuffer: Buffer = Buffer.alloc(0);
     private isConnected: boolean = false;
+    private logger = BeadLogger.getInstance();
 
     constructor() {
         super();
@@ -15,7 +17,7 @@ export class NetworkManager extends EventEmitter {
 
     public connect(port?: number) {
         if (this.isConnected) {
-            console.log('Already connected');
+            this.logger.info('Already connected');
             return;
         }
 
@@ -23,7 +25,7 @@ export class NetworkManager extends EventEmitter {
         this.socket = new net.Socket();
 
         this.socket.connect(port ?? config.server.port, config.server.host, () => {
-            console.log('Connected to server');
+            this.logger.info('Connected to server');
             this.isConnected = true;
             this.emit('connected');
         });
@@ -34,7 +36,7 @@ export class NetworkManager extends EventEmitter {
         });
 
         this.socket.on('close', () => {
-            console.log('Connection closed');
+            this.logger.info('Connection closed');
             this.isConnected = false;
             this.emit('disconnected');
             // 可以在这里添加重连逻辑
@@ -72,11 +74,11 @@ export class NetworkManager extends EventEmitter {
             length.writeUInt32BE(data.length, 0);
 
             const buffer = Buffer.concat([length, data]);
-            // console.log('Send bytes:', buffer.length);
+            // this.logger.info('Send bytes:', buffer.length);
 
             this.socket!.write(buffer, (err) => {
                 if (err) {
-                    console.log(err);
+                    this.logger.info(err);
                     reject(err);
                 } else {
                     resolve();

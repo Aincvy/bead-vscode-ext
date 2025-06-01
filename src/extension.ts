@@ -1,13 +1,12 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 import { NetworkManager } from './network';
 import { BeadMessageManager } from './beadMsg';
 import * as beadMessage from './bead_message';
 import * as path from 'path';
 import { ConfigManager, BeadConfig } from './config';
-import { sleep } from './utils';
+import { sleep, BeadLogger } from './utils';
 import { ServerManager } from './serverManager';
+import { log } from 'console';
 
 const runtimeEntity = {
     project: {
@@ -17,6 +16,7 @@ const runtimeEntity = {
 };
 
 const networkManager = new NetworkManager();
+const logger = BeadLogger.getInstance();
 
 networkManager.on('connected', () => {
     vscode.window.showInformationMessage('bead: connected server');
@@ -41,17 +41,17 @@ function createCompletionItems(res: beadMessage.bead.msg.IResTextCompletion, pos
     if (res.errorType === beadMessage.bead.msg.ResTextCompletion.ErrorTypeT.Success && (res.content?.length ?? 0) > 0) {
         const completionItem = new vscode.InlineCompletionItem(res.content || "", new vscode.Range(pos, pos.translate(0, res.content?.length)));
         // completionItem.insertText = res.content || '';
-        console.log('content is !!! ', completionItem.insertText);
+        logger.info('content is !!! ', completionItem.insertText);
 
         return [completionItem];
     } 
 
-    console.log('completion failed: ', res.errorType);
+    logger.info('completion failed: ', res.errorType);
     return [];
 }
 
 beadMsgManager.on('onTextCompletion', (id: number, res: beadMessage.bead.msg.IResTextCompletion) => {
-    console.log('Received text completion:', id, res.content);
+    logger.info('Received text completion:', id, res.content);
 
     // 将结果放入globalMessageMap
     globalMessageMap.set(id, res);
@@ -64,11 +64,11 @@ beadMsgManager.on('onTextCompletion', (id: number, res: beadMessage.bead.msg.IRe
     }
 });
 beadMsgManager.on('onPingPong', (id: number) => {
-    console.log('Received ping pong:', id);
+    logger.info('Received ping pong:', id);
 });
 
 beadMsgManager.on('onExportTypePrompt', (id: number, res : beadMessage.bead.msg.IResExportTypePrompt) => {
-    console.log('Received export type prompt:', id, res.errorType);
+    logger.info('Received export type prompt:', id, res.errorType);
     if (res.errorType !== beadMessage.bead.msg.ResExportTypePrompt.ErrorTypeT.Success) {
         // show 一个提示
         vscode.window.showErrorMessage("Export type prompt failed!");
@@ -158,7 +158,7 @@ export function registerCommands(context: vscode.ExtensionContext) {
 
         const filePath = document.uri.fsPath;
         beadMsgManager.sendExportTypePrompt(filePath, range);
-        console.log('send exportTypePromptCommand', filePath, range);
+        logger.info('send exportTypePromptCommand', filePath, range);
     });
     context.subscriptions.push(exportTypePromptCommand);
 
@@ -234,14 +234,12 @@ export function registerCommands(context: vscode.ExtensionContext) {
         stopServerCommand,
         showServerStatusCommand
     );
-
 }
-
-
 
 export function activate(context: vscode.ExtensionContext) {
 
-	console.log('Congratulations, your extension "bead" is now active!');
+    logger.initialize();
+    logger.info('Bead 插件已激活');
 
     const configManager = ConfigManager.getInstance();
 
@@ -249,7 +247,7 @@ export function activate(context: vscode.ExtensionContext) {
         const document = event.document;
         const filepath = document.uri.fsPath;
 
-        // console.log('onDidChangeTextDocument: ', filepath, event.contentChanges);
+        // logger.info('onDidChangeTextDocument: ', filepath, event.contentChanges);
         // 过滤条件
         if (filepath.includes('extension-output-') ||
             document.uri.scheme === 'output' ||
@@ -282,8 +280,8 @@ export function activate(context: vscode.ExtensionContext) {
     // 监听工作区文件夹变化事件
     const workspaceFoldersChangeDisposable = vscode.workspace.onDidChangeWorkspaceFolders(event => {
         for (let folder of event.added) {
-            console.log(`新打开的文件夹路径: ${folder.uri.fsPath}`);
-            console.log(`新打开的文件夹名称: ${path.basename(folder.uri.fsPath)}`);
+            logger.info(`新打开的文件夹路径: ${folder.uri.fsPath}`);
+            logger.info(`新打开的文件夹名称: ${path.basename(folder.uri.fsPath)}`);
 
             const projectName = path.basename(folder.uri.fsPath);
             const projectPath = folder.uri.fsPath;
@@ -295,7 +293,7 @@ export function activate(context: vscode.ExtensionContext) {
 
     // 监听文件打开事件
     const textDocumentOpenedDisposable = vscode.workspace.onDidOpenTextDocument(document => {
-        console.log(`打开的文件路径: ${document.uri.fsPath}`);
+        logger.info(`打开的文件路径: ${document.uri.fsPath}`);
 
         beadMsgManager.sendOpenFile(document.uri.fsPath);
     });
@@ -317,32 +315,33 @@ export function activate(context: vscode.ExtensionContext) {
                     return [];
                 }
 
-                console.log("provideInlineCompletionItems at line:", line);
+                logger.info("provideInlineCompletionItems at line:", line);
                 try {
                     const messageId = await beadMsgManager.sendTextCompletion(filepath, line, column);
+                    logger.info(`Sent completion request, messageId: ${messageId}`);
 
                     let i = 0;
-                    while (i++ < 90) {
+                    while (i++ < 45) {
                         if (cancelToken.isCancellationRequested) {
                             return [];
                         }
 
                         // 检查 globalMessageMap 是否存在结果
                         if (globalMessageMap.has(messageId)) {
-                            console.log('return to vscode, messageId: ', messageId);
+                            logger.info('return to vscode, messageId: ', messageId);
                             const res = globalMessageMap.get(messageId)!;
                             globalMessageMap.delete(messageId);
                             return createCompletionItems(res, position);
                         } 
 
-                        // console.log('wait once');
+                        // logger.info('wait once');
                         await sleep(25);
                     }
                     
-                    console.log("messageId: ", messageId, " timeout!");
+                    logger.info("messageId: ", messageId, " timeout!");
                     return [];
                 } catch (error) {
-                    console.error('Error in completion provider:', error);
+                    logger.error('Error in completion provider:', error);
                     return [];
                 }
             }
@@ -352,20 +351,20 @@ export function activate(context: vscode.ExtensionContext) {
         // e.files 是一个数组，包含了所有被移动的文件信息
         // 每个文件都有 oldUri 和 newUri 属性
         for (const { oldUri, newUri } of e.files) {
-            console.log("send file delete: ", oldUri.fsPath);
+            logger.info("send file delete: ", oldUri.fsPath);
             beadMsgManager.sendFileDelete(oldUri.fsPath);
         }
 
         await sleep(25);
         for (const { oldUri, newUri } of e.files) {
-            console.log("send file open: ", oldUri.fsPath);
+            logger.info("send file open: ", oldUri.fsPath);
             beadMsgManager.sendOpenFile(newUri.fsPath);
         }
     });
 
     const onFileDeleted = vscode.workspace.onDidDeleteFiles(async (event: vscode.FileDeleteEvent) => {
         for (const file of event.files) {
-            console.log('File deleted: ', file.fsPath);
+            logger.info('File deleted: ', file.fsPath);
 
             await beadMsgManager.sendFileDelete(file.fsPath);
         }
@@ -378,7 +377,7 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(textDocumentOpenedDisposable);
     context.subscriptions.push(onFileRename);
     context.subscriptions.push(onFileDeleted);
-    context.subscriptions.push(vscode.workspace.onWillDeleteFiles(e => console.log('will delete file event, count ', e.files.length)));
+    context.subscriptions.push(vscode.workspace.onWillDeleteFiles(e => logger.info('will delete file event, count ', e.files.length)));
 
     registerCommands(context);
 
@@ -410,16 +409,20 @@ export function activate(context: vscode.ExtensionContext) {
 
 // This method is called when your extension is deactivated
 export function deactivate() {
-    console.log('Goodbye, your extension "bead" is now deactivated!');
+    logger.info('extension "bead" is now deactivated!');
     networkManager.disconnect();
+
+    ConfigManager.getInstance().dispose();
+    serverManager.dispose();
+    logger.dispose();
 }
 
 
 function checkCurrentWorkspace() {
     if (vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders.length > 0) {
         for (let folder of vscode.workspace.workspaceFolders) {
-            console.log(`当前打开的文件夹路径: ${folder.uri.fsPath}`);
-            console.log(`当前打开的文件夹名称: ${path.basename(folder.uri.fsPath)}`);
+            logger.info(`当前打开的文件夹路径: ${folder.uri.fsPath}`);
+            logger.info(`当前打开的文件夹名称: ${path.basename(folder.uri.fsPath)}`);
 
             const projectName = path.basename(folder.uri.fsPath);
             const projectPath = folder.uri.fsPath;

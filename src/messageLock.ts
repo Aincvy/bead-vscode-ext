@@ -33,7 +33,6 @@ class MessageLockManager {
     }
 }
 
-// 创建单例
 const messageLockManager = new MessageLockManager();
 export default messageLockManager;
 
